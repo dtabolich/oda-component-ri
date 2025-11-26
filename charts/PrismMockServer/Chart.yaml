@@ -1,0 +1,27 @@
+apiVersion: v2
+name: prism-mock-server
+description: A Helm chart for deploying Stoplight Prism API mock server in Kubernetes
+
+# This is an application chart
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 1.0.0
+
+# This is the version number of the application being deployed.
+appVersion: "5.10.0"
+
+keywords:
+  - prism
+  - mock-server
+  - openapi
+  - api
+  - testing
+
+maintainers:
+  - name: DevOps Team
+
+home: https://stoplight.io/open-source/prism
+sources:
+  - https://github.com/stoplightio/prism

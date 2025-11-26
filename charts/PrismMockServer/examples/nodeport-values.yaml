@@ -1,0 +1,26 @@
+# Example: Deploy Prism with NodePort service for easy external access
+
+prism:
+  replicaCount: 1
+  options:
+    cors: true
+    validation: true
+
+# Use the OpenAPI Petstore example
+spec:
+  url: "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml"
+
+# NodePort service for external access
+service:
+  type: NodePort
+  port: 80
+  targetPort: 4010
+  nodePort: 30080  # Access via http://<node-ip>:30080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

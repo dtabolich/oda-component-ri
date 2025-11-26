@@ -1,0 +1,64 @@
+# WireMock Helm Chart Values
+
+replicaCount: 1
+
+image:
+  repository: wiremock/wiremock
+  tag: "3.3.1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# WireMock command line arguments
+wiremock:
+  # Enable verbose logging
+  verbose: true
+  # Port to run on
+  port: 8080
+  # Additional arguments
+  extraArgs: []
+    # - --global-response-templating
+    # - --local-response-templating
+
+# Stub mappings - JSON array of WireMock stubs
+mappings: []
+  # - request:
+  #     method: GET
+  #     url: /api/users
+  #   response:
+  #     status: 200
+  #     jsonBody:
+  #       users: []
+
+# Files for __files directory (response bodies)
+files: {}
+  # sample.json: |
+  #   {"message": "Hello"}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /__admin/mappings
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /__admin/mappings
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,124 @@
+
+███████████████████████████████████████████████████████████████████████████████
+█                                                                             █
+█   ╔═╗┬─┐┬┌─┐┌┬┐  ╔╦╗┌─┐┌─┐┬┌─  ╔═╗┌─┐┬─┐┬  ┬┌─┐┬─┐                      █
+█   ╠═╝├┬┘│└─┐│││  ║║║│ ││  ├┴┐  ╚═╗├┤ ├┬┘└┐┌┘├┤ ├┬┘                      █
+█   ╩  ┴└─┴└─┘┴ ┴  ╩ ╩└─┘└─┘┴ ┴  ╚═╝└─┘┴└─ └┘ └─┘┴└─                      █
+█                                                                             █
+███████████████████████████████████████████████████████████████████████████████
+
+Successfully deployed Prism Mock Server! 🎉
+
+Your release is named: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+{{- if .Values.spec.url }}
+OpenAPI Spec Source: URL
+Spec URL: {{ .Values.spec.url }}
+{{- else if .Values.spec.existingConfigMap }}
+OpenAPI Spec Source: Existing ConfigMap
+ConfigMap: {{ .Values.spec.existingConfigMap }}
+{{- else }}
+OpenAPI Spec Source: Inline (from values.yaml)
+ConfigMap: {{ .Release.Name }}-prism-spec
+{{- end }}
+
+===============================================================================
+📡 ACCESSING YOUR MOCK SERVER
+===============================================================================
+
+{{- if eq .Values.service.type "ClusterIP" }}
+
+1. From within the cluster:
+   
+   Service DNS: {{ .Release.Name }}-prism.{{ .Release.Namespace }}.svc.cluster.local
+   Port: {{ .Values.service.port }}
+
+   Example:
+   curl http://{{ .Release.Name }}-prism.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}/health
+
+2. Using port-forward (for local testing):
+
+   kubectl port-forward svc/{{ .Release.Name }}-prism 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+
+   Then access: http://localhost:8080
+
+{{- else if eq .Values.service.type "NodePort" }}
+
+NodePort Service:
+
+   export NODE_PORT=$(kubectl get svc {{ .Release.Name }}-prism -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}')
+   export NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
+   
+   echo "Access your mock server at: http://$NODE_IP:$NODE_PORT"
+
+{{- else if eq .Values.service.type "LoadBalancer" }}
+
+LoadBalancer Service:
+
+   export SERVICE_IP=$(kubectl get svc {{ .Release.Name }}-prism -n {{ .Release.Namespace }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   
+   echo "Access your mock server at: http://$SERVICE_IP:{{ .Values.service.port }}"
+   
+   Note: It may take a few minutes for the LoadBalancer IP to be available.
+
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+
+3. Via Ingress:
+
+{{- range .Values.ingress.hosts }}
+   {{- range .paths }}
+   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}{{ .path }}
+   {{- end }}
+{{- end }}
+{{- end }}
+
+===============================================================================
+🔍 USEFUL COMMANDS
+===============================================================================
+
+# View pod status
+kubectl get pods -l app={{ .Release.Name }}-prism -n {{ .Release.Namespace }}
+
+# View logs
+kubectl logs -l app={{ .Release.Name }}-prism -n {{ .Release.Namespace }} -f
+
+# View service details
+kubectl get svc {{ .Release.Name }}-prism -n {{ .Release.Namespace }}
+
+# Describe pod (for troubleshooting)
+kubectl describe pod -l app={{ .Release.Name }}-prism -n {{ .Release.Namespace }}
+
+{{- if not .Values.spec.url }}
+# View the OpenAPI spec ConfigMap
+kubectl get configmap {{ if .Values.spec.existingConfigMap }}{{ .Values.spec.existingConfigMap }}{{ else }}{{ .Release.Name }}-prism-spec{{ end }} -n {{ .Release.Namespace }} -o yaml
+{{- end }}
+
+===============================================================================
+⚙️  CONFIGURATION
+===============================================================================
+
+Replicas: {{ .Values.prism.replicaCount }}
+Container Port: {{ .Values.prism.port }}
+CORS Enabled: {{ .Values.prism.options.cors }}
+Validation Enabled: {{ .Values.prism.options.validation }}
+Dynamic Responses: {{ .Values.prism.options.dynamic }}
+
+===============================================================================
+📚 DOCUMENTATION
+===============================================================================
+
+For more information:
+- Prism Docs: https://docs.stoplight.io/docs/prism
+- Chart README: https://github.com/tmforum-oda/reference-example-components/tree/master/charts/PrismMockServer
+- OpenAPI Spec: https://www.openapis.org/
+
+===============================================================================
+
+💡 Tip: Test your mock server with:
+   kubectl port-forward svc/{{ .Release.Name }}-prism 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+   curl http://localhost:8080/health
+
+Happy Mocking! 🚀
