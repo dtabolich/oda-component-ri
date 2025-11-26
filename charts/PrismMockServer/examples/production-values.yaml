@@ -1,0 +1,99 @@
+# Example: Production-ready configuration for Prism Mock Server
+
+prism:
+  # Multiple replicas for high availability
+  replicaCount: 3
+  
+  image: stoplight/prism:5
+  imagePullPolicy: IfNotPresent
+  
+  options:
+    cors: true
+    validation: true
+    dynamic: false
+    errors: false  # Don't expose detailed errors in production
+
+# Use a URL to your OpenAPI spec (from Git, S3, etc.)
+spec:
+  url: "https://your-repo.com/api-specs/openapi.yaml"
+  # Or use an existing ConfigMap managed by your CI/CD
+  # existingConfigMap: "production-api-spec"
+  # configMapKey: "openapi.yaml"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: mock-api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: mock-api-tls
+      hosts:
+        - mock-api.example.com
+
+# Resource limits for production
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+# Pod anti-affinity to spread pods across nodes
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - prism
+          topologyKey: kubernetes.io/hostname
+
+# Security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /
+    port: 4010
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 4010
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3

@@ -1,0 +1,34 @@
+# Example: Deploy Prism with the OpenAPI Petstore specification
+
+prism:
+  replicaCount: 1
+  options:
+    cors: true
+    validation: true
+    dynamic: false
+
+# Use the official OpenAPI Petstore example
+spec:
+  url: "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml"
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Optional: Enable ingress
+# ingress:
+#   enabled: true
+#   className: "nginx"
+#   hosts:
+#     - host: petstore-mock.local
+#       paths:
+#         - path: /
+#           pathType: Prefix

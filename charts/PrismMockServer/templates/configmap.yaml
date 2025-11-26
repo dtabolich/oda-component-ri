@@ -1,0 +1,14 @@
+{{- if and (not .Values.spec.url) (not .Values.spec.existingConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prism-spec
+  labels:
+    app: {{ .Release.Name }}-prism
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{ .Values.spec.configMapKey }}: |
+{{ .Values.spec.inline | indent 4 }}
+{{- end }}

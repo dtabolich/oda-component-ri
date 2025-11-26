@@ -1,0 +1,157 @@
+# Default values for prism-mock-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Prism configuration
+prism:
+  # Docker image for Prism
+  image: stoplight/prism:5
+  imagePullPolicy: IfNotPresent
+  
+  # Number of replicas
+  replicaCount: 1
+  
+  # Prism command arguments
+  # Options: mock, proxy
+  command: mock
+  
+  # Port where Prism will listen
+  port: 4010
+  
+  # Prism command line options
+  # Reference: https://docs.stoplight.io/docs/prism/674b27b261c3c-prism-cli
+  options:
+    # Enable CORS
+    cors: true
+    # Enable dynamic response generation
+    dynamic: false
+    # Validation of requests/responses
+    validation: true
+    # Error handling behavior (true = return errors, false = pass through)
+    errors: true
+    # Host to bind to
+    host: "0.0.0.0"
+
+# OpenAPI Specification
+# You can provide the spec in three ways:
+# 1. As a URL (spec.url)
+# 2. As inline YAML (spec.inline)
+# 3. From an existing ConfigMap (spec.existingConfigMap)
+spec:
+  # Option 1: URL to OpenAPI spec (e.g., from a git repo or web server)
+  url: ""
+  
+  # Option 2: Inline OpenAPI spec (will be stored in a ConfigMap)
+  inline: |
+    openapi: 3.0.0
+    info:
+      title: Sample API
+      version: 1.0.0
+    paths:
+      /health:
+        get:
+          summary: Health check
+          responses:
+            '200':
+              description: Successful response
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: ok
+  
+  # Option 3: Use an existing ConfigMap
+  existingConfigMap: ""
+  # Key in the ConfigMap that contains the spec
+  configMapKey: "openapi.yaml"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 4010
+  # For NodePort or LoadBalancer
+  # nodePort: 30080
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: prism-mock.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: prism-mock-tls
+  #    hosts:
+  #      - prism-mock.local
+
+# Resources limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Security context for the pod
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Security context for the container
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# Liveness probe
+livenessProbe:
+  httpGet:
+    path: /
+    port: 4010
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Readiness probe
+readinessProbe:
+  httpGet:
+    path: /
+    port: 4010
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Additional environment variables
+extraEnv: []
+  # - name: LOG_LEVEL
+  #   value: debug
+
+# Additional volumes
+extraVolumes: []
+
+# Additional volume mounts
+extraVolumeMounts: []
