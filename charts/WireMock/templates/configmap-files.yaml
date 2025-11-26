@@ -1,0 +1,10 @@
+{{- if .Values.files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-wiremock-files
+  labels:
+    app: {{ .Release.Name }}-wiremock
+data:
+{{ toYaml .Values.files | indent 2 }}
+{{- end }}

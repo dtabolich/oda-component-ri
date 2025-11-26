@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-wiremock
+  labels:
+    app: {{ .Release.Name }}-wiremock
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-wiremock
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-wiremock
+      annotations:
+        checksum/mappings: {{ include (print $.Template.BasePath "/configmap-mappings.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: wiremock
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+          - --port={{ .Values.wiremock.port }}
+          {{- if .Values.wiremock.verbose }}
+          - --verbose
+          {{- end }}
+          {{- range .Values.wiremock.extraArgs }}
+          - {{ . }}
+          {{- end }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.wiremock.port }}
+        {{- if .Values.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: mappings
+          mountPath: /home/wiremock/mappings
+        {{- if .Values.files }}
+        - name: files
+          mountPath: /home/wiremock/__files
+        {{- end }}
+      volumes:
+      - name: mappings
+        configMap:
+          name: {{ .Release.Name }}-wiremock-mappings
+      {{- if .Values.files }}
+      - name: files
+        configMap:
+          name: {{ .Release.Name }}-wiremock-files
+      {{- end }}
