@@ -1,0 +1,42 @@
+{{- if and .Values.uiService.enabled .Values.uiService.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-ui
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: ui
+  {{- with .Values.uiService.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.uiService.ingress.className }}
+  ingressClassName: {{ .Values.uiService.ingress.className }}
+  {{- end }}
+  {{- if .Values.uiService.ingress.tls }}
+  tls:
+    {{- range .Values.uiService.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.uiService.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "kratos-auth.fullname" $ }}-ui
+                port:
+                  number: {{ $.Values.uiService.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

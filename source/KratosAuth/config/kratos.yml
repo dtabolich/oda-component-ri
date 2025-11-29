@@ -1,0 +1,143 @@
+version: v1.0.4
+
+dsn: memory
+
+serve:
+  public:
+    base_url: http://localhost:4433/
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:3000
+        - http://localhost:4455
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+        - X-Session-Token
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+  admin:
+    base_url: http://localhost:4434/
+
+selfservice:
+  default_browser_return_url: http://localhost:3000/
+  allowed_return_urls:
+    - http://localhost:3000
+
+  methods:
+    code:
+      passwordless_enabled: true
+      config:
+        lifespan: 15m
+
+  flows:
+    error:
+      ui_url: http://localhost:3000/error
+
+    settings:
+      ui_url: http://localhost:3000/settings
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    recovery:
+      enabled: true
+      ui_url: http://localhost:3000/recovery
+      use: code
+
+    verification:
+      enabled: true
+      ui_url: http://localhost:3000/verification
+      use: code
+      after:
+        default_browser_return_url: http://localhost:3000/
+
+    logout:
+      after:
+        default_browser_return_url: http://localhost:3000/login
+
+    login:
+      ui_url: http://localhost:3000/login
+      lifespan: 10m
+      after:
+        default_browser_return_url: http://localhost:3000/dashboard
+        hooks:
+          - hook: require_verified_address
+
+    registration:
+      lifespan: 10m
+      ui_url: http://localhost:3000/registration
+      after:
+        default_browser_return_url: http://localhost:3000/verification
+        code:
+          hooks:
+            - hook: show_verification_ui
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    from_address: noreply@example.com
+    from_name: Example App
+  
+  # For SMS/phone verification, you'd typically integrate with services like:
+  # - Twilio
+  # - AWS SNS
+  # - Vonage
+  # Example Twilio configuration (requires custom implementation):
+  channels:
+    - id: sms
+      type: http
+      request_config:
+        url: http://localhost:4436/sms/send
+        method: POST
+        body: base64://eyJ0byI6ICJ7eyAuVG8gfX0iLCAiZnJvbSI6ICIrMTIzNDU2Nzg5MCIsICJib2R5IjogInt7IC5Cb2R5IH19In0=
+        headers:
+          Content-Type: application/json
+        auth:
+          type: basic_auth
+          config:
+            user: api_user
+            password: api_password
+
+session:
+  lifespan: 24h
+  earliest_possible_extend: 1h
+  cookie:
+    domain: localhost
+    path: /
+    same_site: Lax
+    persistent: true
+
+feature_flags:
+  use_continue_with_transitions: true

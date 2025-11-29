@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Phone - Passwordless Phone Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-card">
+      <h1>Verify Your Phone</h1>
+      <p class="subtitle">Enter the verification code sent to your phone</p>
+
+      <% if (flow.ui.messages && flow.ui.messages.length > 0) { %>
+        <div class="messages">
+          <% flow.ui.messages.forEach(message => { %>
+            <div class="message <%= message.type %>">
+              <%= message.text %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <% if (user) { %>
+        <div class="info-box">
+          <p>Verification code sent to: <strong><%= user.traits.phone %></strong></p>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/verification?flow=<%= flow.id %>" class="auth-form">
+        <input type="hidden" name="csrf_token" value="<%= csrfToken %>">
+        <input type="hidden" name="method" value="code">
+
+        <% 
+        const codeNode = flow.ui.nodes.find(n => n.attributes.name === 'code');
+        %>
+
+        <div class="form-group">
+          <label for="code">Verification Code</label>
+          <input 
+            type="text" 
+            id="code" 
+            name="code" 
+            placeholder="000000"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            required
+            autocomplete="one-time-code"
+            class="form-input code-input"
+            autofocus
+          >
+          <% if (codeNode && codeNode.messages && codeNode.messages.length > 0) { %>
+            <% codeNode.messages.forEach(msg => { %>
+              <span class="field-error"><%= msg.text %></span>
+            <% }); %>
+          <% } %>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Verify
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Didn't receive a code? <a href="#" onclick="resendCode(); return false;">Resend</a></p>
+      </div>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+  <script>
+    function resendCode() {
+      // Reload the verification flow to send a new code
+      window.location.href = '/verification';
+    }
+  </script>
+</body>
+</html>

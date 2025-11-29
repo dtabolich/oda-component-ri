@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: kratos
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: kratos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - kratos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kratos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kratos Migration
+  kratos-migrate:
+    image: oryd/kratos:v1.0.4
+    environment:
+      - DSN=postgres://kratos:changeme@postgres:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+    volumes:
+      - ./config:/etc/config/kratos:ro
+    command: migrate sql -e --yes --config /etc/config/kratos/kratos.yml
+    networks:
+      - kratos-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+
+  # Ory Kratos
+  kratos:
+    image: oryd/kratos:v1.0.4
+    environment:
+      - DSN=postgres://kratos:changeme@postgres:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+      - LOG_LEVEL=debug
+    ports:
+      - "4433:4433"  # Public API
+      - "4434:4434"  # Admin API
+    volumes:
+      - ./config:/etc/config/kratos:ro
+    command: serve all --config /etc/config/kratos/kratos.yml
+    networks:
+      - kratos-network
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4434/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # SMS Service
+  sms-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - PORT=4436
+      - SMS_PROVIDER=mock
+      - NODE_ENV=development
+    ports:
+      - "4436:4436"
+    networks:
+      - kratos-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4436/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # UI Service
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3000
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - KRATOS_ADMIN_URL=http://kratos:4434
+      - SESSION_SECRET=change-me-in-production
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    networks:
+      - kratos-network
+    depends_on:
+      kratos:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+
+networks:
+  kratos-network:
+    driver: bridge

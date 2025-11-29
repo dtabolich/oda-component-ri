@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-kratos
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: kratos
+spec:
+  replicas: {{ .Values.kratos.replicas }}
+  selector:
+    matchLabels:
+      {{- include "kratos-auth.selectorLabels" . | nindent 6 }}
+      component: kratos
+  template:
+    metadata:
+      labels:
+        {{- include "kratos-auth.selectorLabels" . | nindent 8 }}
+        component: kratos
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-kratos.yaml") . | sha256sum }}
+    spec:
+      initContainers:
+        - name: kratos-automigrate
+          image: "{{ .Values.kratos.image.repository }}:{{ .Values.kratos.image.tag }}"
+          imagePullPolicy: {{ .Values.kratos.image.pullPolicy }}
+          command: ["kratos"]
+          args: ["migrate", "sql", "-e", "--yes", "--config", "/etc/config/kratos/kratos.yml"]
+          volumeMounts:
+            - name: kratos-config
+              mountPath: /etc/config/kratos
+              readOnly: true
+          env:
+            - name: DSN
+              value: {{ include "kratos-auth.dsn" . }}
+      containers:
+        - name: kratos
+          image: "{{ .Values.kratos.image.repository }}:{{ .Values.kratos.image.tag }}"
+          imagePullPolicy: {{ .Values.kratos.image.pullPolicy }}
+          command: ["kratos"]
+          args: ["serve", "all", "--config", "/etc/config/kratos/kratos.yml"]
+          ports:
+            - name: http-public
+              containerPort: 4433
+              protocol: TCP
+            - name: http-admin
+              containerPort: 4434
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/alive
+              port: http-admin
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http-admin
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.kratos.resources | nindent 12 }}
+          volumeMounts:
+            - name: kratos-config
+              mountPath: /etc/config/kratos
+              readOnly: true
+          env:
+            - name: DSN
+              value: {{ include "kratos-auth.dsn" . }}
+      volumes:
+        - name: kratos-config
+          configMap:
+            name: {{ include "kratos-auth.fullname" . }}-kratos-config
