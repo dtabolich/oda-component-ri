@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error - Passwordless Phone Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-card error-card">
+      <h1>⚠️ Error</h1>
+      <div class="error-message">
+        <p><%= error %></p>
+      </div>
+
+      <% if (details && Object.keys(details).length > 0) { %>
+        <details class="error-details">
+          <summary>Technical Details</summary>
+          <pre><%= JSON.stringify(details, null, 2) %></pre>
+        </details>
+      <% } %>
+
+      <div class="auth-footer">
+        <a href="/login" class="btn btn-primary">Go to Login</a>
+        <a href="/" class="btn btn-secondary">Go Home</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

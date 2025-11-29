@@ -1,0 +1,161 @@
+
+# Ory Kratos Configuration
+kratos:
+  image:
+    repository: oryd/kratos
+    tag: v1.0.4
+    pullPolicy: IfNotPresent
+
+  replicas: 2
+
+  service:
+    type: ClusterIP
+    public:
+      port: 4433
+    admin:
+      port: 4434
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  # Database configuration (use PostgreSQL in production)
+  database:
+    type: postgres  # or 'memory' for development
+    host: postgresql
+    port: 5432
+    database: kratos
+    user: kratos
+    password: changeme
+
+  # Secrets (MUST be changed in production)
+  secrets:
+    cookie:
+      - "PLEASE-CHANGE-ME-I-AM-VERY-INSECURE-32CHARS"
+    cipher:
+      - "32-LONG-SECRET-NOT-SECURE-AT-ALL-32"
+
+  # Base URLs
+  baseUrls:
+    public: "http://localhost:4433"
+    admin: "http://localhost:4434"
+    ui: "http://localhost:3000"
+
+  # CORS settings
+  cors:
+    enabled: true
+    allowedOrigins:
+      - "http://localhost:3000"
+      - "http://localhost:4455"
+
+  # Courier (email/SMS) configuration
+  courier:
+    smtp:
+      enabled: false
+      connectionUri: "smtps://test:test@mailslurper:1025/?skip_ssl_verify=true"
+      fromAddress: "noreply@example.com"
+      fromName: "Example App"
+    
+    sms:
+      enabled: true
+      serviceUrl: "http://kratos-sms-service:4436/sms/send"
+
+# SMS Service Configuration
+smsService:
+  enabled: true
+  
+  image:
+    repository: kratos-sms-service
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicas: 1
+
+  service:
+    type: ClusterIP
+    port: 4436
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # SMS Provider configuration
+  provider: "mock"  # Options: mock, twilio, aws-sns, vonage
+  
+  # Twilio Configuration
+  twilio:
+    accountSid: ""
+    authToken: ""
+    phoneNumber: ""
+
+  # AWS SNS Configuration
+  awsSns:
+    region: "us-east-1"
+    accessKeyId: ""
+    secretAccessKey: ""
+
+  # Vonage Configuration
+  vonage:
+    apiKey: ""
+    apiSecret: ""
+    fromNumber: ""
+
+# UI Service Configuration
+uiService:
+  enabled: true
+  
+  image:
+    repository: kratos-auth-ui
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicas: 2
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  ingress:
+    enabled: false
+    className: "nginx"
+    annotations: {}
+    hosts:
+      - host: auth.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 128Mi
+
+  sessionSecret: "change-me-in-production"
+
+# PostgreSQL Configuration
+postgresql:
+  enabled: true
+  auth:
+    username: kratos
+    password: changeme
+    database: kratos
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Global settings
+global:
+  environment: development

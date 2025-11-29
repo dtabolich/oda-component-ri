@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Passwordless Phone Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard-card">
+      <div class="dashboard-header">
+        <h1>Welcome!</h1>
+        <a href="/logout" class="btn btn-secondary">Logout</a>
+      </div>
+
+      <div class="user-info">
+        <h2>Your Profile</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Phone Number:</label>
+            <span><%= user.traits.phone %></span>
+          </div>
+          <% if (user.traits.name && user.traits.name.first) { %>
+            <div class="info-item">
+              <label>Name:</label>
+              <span><%= user.traits.name.first %> <%= user.traits.name.last || '' %></span>
+            </div>
+          <% } %>
+          <div class="info-item">
+            <label>User ID:</label>
+            <span class="mono"><%= user.id %></span>
+          </div>
+          <div class="info-item">
+            <label>Verification Status:</label>
+            <span class="<%= user.verifiable_addresses && user.verifiable_addresses[0] && user.verifiable_addresses[0].verified ? 'verified' : 'unverified' %>">
+              <%= user.verifiable_addresses && user.verifiable_addresses[0] && user.verifiable_addresses[0].verified ? 'Verified ✓' : 'Unverified' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <% if (user.verifiable_addresses && user.verifiable_addresses[0] && !user.verifiable_addresses[0].verified) { %>
+        <div class="alert alert-warning">
+          <p>Your phone number is not yet verified. <a href="/verification">Verify now</a></p>
+        </div>
+      <% } %>
+
+      <div class="actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+          <a href="/settings" class="btn btn-outline">Account Settings</a>
+          <a href="/recovery" class="btn btn-outline">Account Recovery</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

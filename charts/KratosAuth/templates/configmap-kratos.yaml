@@ -1,0 +1,206 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-kratos-config
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: kratos
+data:
+  kratos.yml: |
+    version: v1.0.4
+
+    dsn: {{ include "kratos-auth.dsn" . }}
+
+    serve:
+      public:
+        base_url: {{ .Values.kratos.baseUrls.public }}
+        cors:
+          enabled: {{ .Values.kratos.cors.enabled }}
+          {{- if .Values.kratos.cors.allowedOrigins }}
+          allowed_origins:
+            {{- range .Values.kratos.cors.allowedOrigins }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          allowed_methods:
+            - POST
+            - GET
+            - PUT
+            - PATCH
+            - DELETE
+          allowed_headers:
+            - Authorization
+            - Content-Type
+            - X-Session-Token
+          exposed_headers:
+            - Content-Type
+            - Set-Cookie
+      admin:
+        base_url: {{ .Values.kratos.baseUrls.admin }}
+
+    selfservice:
+      default_browser_return_url: {{ .Values.kratos.baseUrls.ui }}/
+      allowed_return_urls:
+        - {{ .Values.kratos.baseUrls.ui }}
+
+      methods:
+        code:
+          passwordless_enabled: true
+          config:
+            lifespan: 15m
+
+      flows:
+        error:
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/error
+
+        settings:
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/settings
+          privileged_session_max_age: 15m
+          required_aal: highest_available
+
+        recovery:
+          enabled: true
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/recovery
+          use: code
+
+        verification:
+          enabled: true
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/verification
+          use: code
+          after:
+            default_browser_return_url: {{ .Values.kratos.baseUrls.ui }}/
+
+        logout:
+          after:
+            default_browser_return_url: {{ .Values.kratos.baseUrls.ui }}/login
+
+        login:
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/login
+          lifespan: 10m
+          after:
+            default_browser_return_url: {{ .Values.kratos.baseUrls.ui }}/dashboard
+            hooks:
+              - hook: require_verified_address
+
+        registration:
+          lifespan: 10m
+          ui_url: {{ .Values.kratos.baseUrls.ui }}/registration
+          after:
+            default_browser_return_url: {{ .Values.kratos.baseUrls.ui }}/verification
+            code:
+              hooks:
+                - hook: show_verification_ui
+
+    log:
+      level: {{ ternary "debug" "info" (eq .Values.global.environment "development") }}
+      format: json
+      leak_sensitive_values: {{ eq .Values.global.environment "development" }}
+
+    secrets:
+      cookie:
+        {{- range .Values.kratos.secrets.cookie }}
+        - {{ . }}
+        {{- end }}
+      cipher:
+        {{- range .Values.kratos.secrets.cipher }}
+        - {{ . }}
+        {{- end }}
+
+    ciphers:
+      algorithm: xchacha20-poly1305
+
+    hashers:
+      algorithm: bcrypt
+      bcrypt:
+        cost: 8
+
+    identity:
+      default_schema_id: default
+      schemas:
+        - id: default
+          url: file:///etc/config/kratos/identity.schema.json
+
+    courier:
+      {{- if .Values.kratos.courier.smtp.enabled }}
+      smtp:
+        connection_uri: {{ .Values.kratos.courier.smtp.connectionUri }}
+        from_address: {{ .Values.kratos.courier.smtp.fromAddress }}
+        from_name: {{ .Values.kratos.courier.smtp.fromName }}
+      {{- end }}
+      
+      {{- if .Values.smsService.enabled }}
+      channels:
+        - id: sms
+          type: http
+          request_config:
+            url: {{ .Values.kratos.courier.sms.serviceUrl }}
+            method: POST
+            body: base64://eyJ0byI6ICJ7eyAuVG8gfX0iLCAiYm9keSI6ICJ7eyAuQm9keSB9fSJ9
+            headers:
+              Content-Type: application/json
+      {{- end }}
+
+    session:
+      lifespan: 24h
+      earliest_possible_extend: 1h
+      cookie:
+        domain: ""
+        path: /
+        same_site: Lax
+        persistent: true
+
+    feature_flags:
+      use_continue_with_transitions: true
+
+  identity.schema.json: |
+    {
+      "$id": "https://schemas.ory.sh/presets/kratos/identity.phone.schema.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Person",
+      "type": "object",
+      "properties": {
+        "traits": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string",
+              "format": "tel",
+              "title": "Phone Number",
+              "minLength": 10,
+              "maxLength": 20,
+              "ory.sh/kratos": {
+                "credentials": {
+                  "code": {
+                    "identifier": true,
+                    "via": "sms"
+                  }
+                },
+                "recovery": {
+                  "via": "sms"
+                },
+                "verification": {
+                  "via": "sms"
+                }
+              }
+            },
+            "name": {
+              "type": "object",
+              "properties": {
+                "first": {
+                  "type": "string",
+                  "title": "First Name"
+                },
+                "last": {
+                  "type": "string",
+                  "title": "Last Name"
+                }
+              }
+            }
+          },
+          "required": [
+            "phone"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }

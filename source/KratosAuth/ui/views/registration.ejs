@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Passwordless Phone Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-card">
+      <h1>Create Account</h1>
+      <p class="subtitle">Enter your phone number to create an account</p>
+
+      <% if (flow.ui.messages && flow.ui.messages.length > 0) { %>
+        <div class="messages">
+          <% flow.ui.messages.forEach(message => { %>
+            <div class="message <%= message.type %>">
+              <%= message.text %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/registration?flow=<%= flow.id %>" class="auth-form">
+        <input type="hidden" name="csrf_token" value="<%= csrfToken %>">
+        <input type="hidden" name="method" value="code">
+
+        <% 
+        const phoneNode = flow.ui.nodes.find(n => n.attributes.name === 'traits.phone');
+        const submitNode = flow.ui.nodes.find(n => n.attributes.type === 'submit');
+        %>
+
+        <div class="form-group">
+          <label for="traits.phone">Phone Number</label>
+          <input 
+            type="tel" 
+            id="traits.phone" 
+            name="traits.phone" 
+            value="<%= prefilledPhone || '' %>"
+            placeholder="+1234567890"
+            pattern="[\+]?[0-9]{10,20}"
+            required
+            autocomplete="tel"
+            class="form-input"
+          >
+          <% if (phoneNode && phoneNode.messages && phoneNode.messages.length > 0) { %>
+            <% phoneNode.messages.forEach(msg => { %>
+              <span class="field-error"><%= msg.text %></span>
+            <% }); %>
+          <% } %>
+          <span class="field-hint">Enter your phone number in international format (e.g., +1234567890)</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Continue
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="/login">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

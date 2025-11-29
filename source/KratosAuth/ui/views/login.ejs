@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Passwordless Phone Authentication</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="auth-card">
+      <h1>Login</h1>
+      <p class="subtitle">Enter your phone number to sign in</p>
+
+      <% if (flow.ui.messages && flow.ui.messages.length > 0) { %>
+        <div class="messages">
+          <% flow.ui.messages.forEach(message => { %>
+            <div class="message <%= message.type %>">
+              <%= message.text %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/login?flow=<%= flow.id %>" class="auth-form">
+        <input type="hidden" name="csrf_token" value="<%= csrfToken %>">
+        <input type="hidden" name="method" value="code">
+
+        <% 
+        const phoneNode = flow.ui.nodes.find(n => n.attributes.name === 'identifier' || n.attributes.name === 'traits.phone');
+        const codeNode = flow.ui.nodes.find(n => n.attributes.name === 'code');
+        const submitNode = flow.ui.nodes.find(n => n.attributes.type === 'submit');
+        %>
+
+        <% if (phoneNode) { %>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              placeholder="+1234567890"
+              pattern="[\+]?[0-9]{10,20}"
+              required
+              autocomplete="tel"
+              class="form-input"
+            >
+            <% if (phoneNode.messages && phoneNode.messages.length > 0) { %>
+              <% phoneNode.messages.forEach(msg => { %>
+                <span class="field-error"><%= msg.text %></span>
+              <% }); %>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (codeNode) { %>
+          <div class="form-group">
+            <label for="code">Verification Code</label>
+            <input 
+              type="text" 
+              id="code" 
+              name="code" 
+              placeholder="Enter code sent to your phone"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              class="form-input"
+            >
+            <% if (codeNode.messages && codeNode.messages.length > 0) { %>
+              <% codeNode.messages.forEach(msg => { %>
+                <span class="field-error"><%= msg.text %></span>
+              <% }); %>
+            <% } %>
+          </div>
+        <% } %>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          <%= codeNode ? 'Verify Code' : 'Send Code' %>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="/registration">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

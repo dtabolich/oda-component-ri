@@ -1,0 +1,97 @@
+{{- if .Values.smsService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-sms-service
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: sms-service
+spec:
+  replicas: {{ .Values.smsService.replicas }}
+  selector:
+    matchLabels:
+      {{- include "kratos-auth.selectorLabels" . | nindent 6 }}
+      component: sms-service
+  template:
+    metadata:
+      labels:
+        {{- include "kratos-auth.selectorLabels" . | nindent 8 }}
+        component: sms-service
+    spec:
+      containers:
+        - name: sms-service
+          image: "{{ .Values.smsService.image.repository }}:{{ .Values.smsService.image.tag }}"
+          imagePullPolicy: {{ .Values.smsService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 4436
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.smsService.resources | nindent 12 }}
+          env:
+            - name: PORT
+              value: "4436"
+            - name: SMS_PROVIDER
+              value: {{ .Values.smsService.provider | quote }}
+            - name: NODE_ENV
+              value: {{ .Values.global.environment | quote }}
+            {{- if eq .Values.smsService.provider "twilio" }}
+            - name: TWILIO_ACCOUNT_SID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: twilio-account-sid
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: twilio-auth-token
+            - name: TWILIO_PHONE_NUMBER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: twilio-phone-number
+            {{- end }}
+            {{- if eq .Values.smsService.provider "aws-sns" }}
+            - name: AWS_REGION
+              value: {{ .Values.smsService.awsSns.region | quote }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: aws-secret-access-key
+            {{- end }}
+            {{- if eq .Values.smsService.provider "vonage" }}
+            - name: VONAGE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: vonage-api-key
+            - name: VONAGE_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kratos-auth.fullname" . }}-sms-secrets
+                  key: vonage-api-secret
+            - name: VONAGE_FROM_NUMBER
+              value: {{ .Values.smsService.vonage.fromNumber | quote }}
+            {{- end }}
+{{- end }}

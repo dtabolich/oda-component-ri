@@ -1,0 +1,23 @@
+apiVersion: v2
+name: kratos-auth
+description: A Helm chart for Ory Kratos passwordless phone authentication
+type: application
+version: 1.0.0
+appVersion: "25.0.4"
+
+keywords:
+  - kratos
+  - authentication
+  - passwordless
+  - phone
+  - identity
+
+maintainers:
+  - name: ODA Components Team
+    email: support@example.com
+
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

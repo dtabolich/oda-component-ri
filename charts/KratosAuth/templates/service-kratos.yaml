@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-kratos-public
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: kratos
+spec:
+  type: {{ .Values.kratos.service.type }}
+  ports:
+    - port: {{ .Values.kratos.service.public.port }}
+      targetPort: http-public
+      protocol: TCP
+      name: http-public
+  selector:
+    {{- include "kratos-auth.selectorLabels" . | nindent 4 }}
+    component: kratos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kratos-auth.fullname" . }}-kratos-admin
+  labels:
+    {{- include "kratos-auth.labels" . | nindent 4 }}
+    component: kratos
+spec:
+  type: {{ .Values.kratos.service.type }}
+  ports:
+    - port: {{ .Values.kratos.service.admin.port }}
+      targetPort: http-admin
+      protocol: TCP
+      name: http-admin
+  selector:
+    {{- include "kratos-auth.selectorLabels" . | nindent 4 }}
+    component: kratos
