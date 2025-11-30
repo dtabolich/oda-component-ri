@@ -1,0 +1,86 @@
+{
+  "$id": "https://your-domain.com/identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "traits": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "title": "Your E-Mail",
+          "minLength": 3,
+          "maxLength": 320,
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
+              },
+              "code": {
+                "identifier": true,
+                "via": "email"
+              }
+            },
+            "verification": {
+              "via": "email"
+            },
+            "recovery": {
+              "via": "email"
+            }
+          }
+        },
+        "phone": {
+          "type": "string",
+          "format": "tel",
+          "title": "Phone Number",
+          "description": "Phone number in E.164 format (e.g., +1234567890)",
+          "pattern": "^\\+[1-9]\\d{1,14}$",
+          "ory.sh/kratos": {
+            "credentials": {
+              "code": {
+                "identifier": true,
+                "via": "sms"
+              }
+            },
+            "verification": {
+              "via": "sms"
+            },
+            "recovery": {
+              "via": "sms"
+            }
+          }
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "first": {
+              "title": "First Name",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "last": {
+              "title": "Last Name",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        "accepted_tos": {
+          "type": "boolean",
+          "title": "Accept Terms of Service",
+          "description": "You must accept our terms of service to register",
+          "const": true
+        }
+      },
+      "required": [
+        "email",
+        "accepted_tos"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

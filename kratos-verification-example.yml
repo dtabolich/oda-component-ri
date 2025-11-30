@@ -1,0 +1,167 @@
+# Ory Kratos Configuration Example with Verification
+# This configuration demonstrates passwordless registration with verification
+
+version: v1.0.0
+
+dsn: memory
+
+serve:
+  public:
+    base_url: http://localhost:4433
+    cors:
+      enabled: true
+  admin:
+    base_url: http://localhost:4434
+
+selfservice:
+  default_browser_return_url: http://localhost:4455/
+  allowed_return_urls:
+    - http://localhost:4455
+
+  flows:
+    error:
+      ui_url: http://localhost:4455/error
+
+    settings:
+      ui_url: http://localhost:4455/settings
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    recovery:
+      enabled: true
+      ui_url: http://localhost:4455/recovery
+      use: code
+
+    verification:
+      enabled: true
+      ui_url: http://localhost:4455/verification
+      use: code
+      after:
+        default_browser_return_url: http://localhost:4455/welcome
+
+    logout:
+      after:
+        default_browser_return_url: http://localhost:4455/login
+
+    login:
+      ui_url: http://localhost:4455/login
+      lifespan: 10m
+      after:
+        code:
+          hooks:
+            # This hook ensures users cannot login without verifying their address
+            - hook: require_verified_address
+        password:
+          hooks:
+            - hook: require_verified_address
+
+    registration:
+      lifespan: 10m
+      ui_url: http://localhost:4455/registration
+      after:
+        # For passwordless (code) registration
+        code:
+          hooks:
+            # Option 1: Just create session (recommended for code method)
+            # The code method automatically verifies the address
+            - hook: session
+            
+            # Option 2: Show verification UI then create session
+            # Useful if you want a "verification successful" page
+            # - hook: show_verification_ui
+            # - hook: session
+
+        # For password registration
+        password:
+          hooks:
+            # Show verification UI after password registration
+            - hook: show_verification_ui
+            - hook: session
+
+  methods:
+    # Passwordless authentication with code (email/SMS OTP)
+    code:
+      passwordless_enabled: true  # Enables both login and registration with code
+      enabled: true
+      config:
+        lifespan: 15m  # How long the code is valid
+        max_submissions: 5  # Max attempts before flow is invalidated
+
+    # Traditional password authentication
+    password:
+      enabled: true
+      config:
+        haveibeenpwned_enabled: false
+        min_password_length: 8
+
+# Identity Schema Configuration
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+# Courier Configuration for Sending Verification Codes
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    from_address: noreply@example.com
+    from_name: "Your App Name"
+  
+  # Templates can be customized
+  templates:
+    verification_code:
+      valid:
+        email:
+          body:
+            html: |
+              Hi,
+              
+              Please verify your email address by entering the following code:
+              
+              {{ .VerificationCode }}
+              
+              This code expires in 15 minutes.
+          subject: Please verify your email address
+
+# Security Settings
+security:
+  account_enumeration:
+    # Set to true to prevent account enumeration attacks
+    # This hides whether an account exists or not
+    mitigate: false
+
+# Feature Flags
+feature_flags:
+  # Set to false for modern behavior (use continue_with array)
+  legacy_require_verified_login_error: false
+  
+  # Set to false to only show verification UI when hook is configured
+  use_continue_with_transitions: true
+
+# Session Configuration
+session:
+  lifespan: 24h
+  earliest_possible_extend: 1h
+  cookie:
+    domain: localhost
+    same_site: Lax
+
+# Logging (for development)
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true  # ONLY FOR DEVELOPMENT - shows codes in logs
+
+# Secrets (change these in production!)
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+# Hashing Configuration
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 12
