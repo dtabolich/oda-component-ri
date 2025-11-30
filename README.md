@@ -24,45 +24,55 @@ This repository contains comprehensive documentation about Ory Kratos (v25.4.0) 
    - Copy-paste examples
    - React hooks
 
-4. **[TROUBLESHOOT_INVALID_CODE_ERROR.md](TROUBLESHOOT_INVALID_CODE_ERROR.md)** - **Troubleshooting guide**
+4. **[SMS_CODE_PATTERNS_CHEATSHEET.md](SMS_CODE_PATTERNS_CHEATSHEET.md)** - Cheatsheet ⭐
+   - Registration vs Login side-by-side
+   - Complete patterns
+   - Quick reference card
+
+5. **[TROUBLESHOOT_INVALID_CODE_ERROR.md](TROUBLESHOOT_INVALID_CODE_ERROR.md)** - **Troubleshooting guide**
    - "Code invalid or already used" error
    - Common causes and solutions
    - Working code example
 
-5. **[QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)** - Instant fix
+6. **[QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)** - Instant fix (Registration)
    - The one thing you're probably doing wrong
    - Side-by-side comparison
 
+7. **[FIX_LOGIN_CODE_ERROR.md](FIX_LOGIN_CODE_ERROR.md)** - Instant fix (Login)
+   - Same fix for login flow
+   - Login-specific examples
+   - Complete working component
+
 ### Deep Dive on Auto-Verification
 
-6. **[CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md](CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md)** - **START HERE for understanding auto-verification**
+8. **[CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md](CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md)** - **START HERE for understanding auto-verification**
    - Detailed explanation with actual source code
    - Shows the exact functions that perform verification
    - Database schema and field changes
    - Security implications and why it works
    - Comparison with password method
 
-7. **[VISUAL_VERIFICATION_FLOW.md](VISUAL_VERIFICATION_FLOW.md)** - Visual diagrams
+9. **[VISUAL_VERIFICATION_FLOW.md](VISUAL_VERIFICATION_FLOW.md)** - Visual diagrams
    - Complete flow diagrams
    - Side-by-side comparisons
    - Database state transitions
    - Security reasoning visualized
 
-8. **[TEST_AUTO_VERIFICATION.md](TEST_AUTO_VERIFICATION.md)** - Practical testing guide
-   - 10 different tests to observe verification in action
-   - SQL queries to watch database changes
-   - Timing tests proving instant verification
-   - Proof that it really happens automatically
+10. **[TEST_AUTO_VERIFICATION.md](TEST_AUTO_VERIFICATION.md)** - Practical testing guide
+    - 10 different tests to observe verification in action
+    - SQL queries to watch database changes
+    - Timing tests proving instant verification
+    - Proof that it really happens automatically
 
 ### Configuration Guides
 
-9. **[KRATOS_VERIFICATION_SETUP.md](KRATOS_VERIFICATION_SETUP.md)** - Complete setup guide
-   - How to configure verification in Kratos
-   - Identity schema setup
-   - Courier configuration
-   - Common scenarios and use cases
+11. **[KRATOS_VERIFICATION_SETUP.md](KRATOS_VERIFICATION_SETUP.md)** - Complete setup guide
+    - How to configure verification in Kratos
+    - Identity schema setup
+    - Courier configuration
+    - Common scenarios and use cases
 
-10. **[VERIFICATION_HOOKS_QUICK_REFERENCE.md](VERIFICATION_HOOKS_QUICK_REFERENCE.md)** - Quick reference
+12. **[VERIFICATION_HOOKS_QUICK_REFERENCE.md](VERIFICATION_HOOKS_QUICK_REFERENCE.md)** - Quick reference
     - Hook combinations and their effects
     - When to use each hook
     - Configuration examples
@@ -70,22 +80,22 @@ This repository contains comprehensive documentation about Ory Kratos (v25.4.0) 
 
 ### Ready-to-Use Files
 
-11. **[kratos-verification-example.yml](kratos-verification-example.yml)** - Complete Kratos config
+13. **[kratos-verification-example.yml](kratos-verification-example.yml)** - Complete Kratos config
     - Production-ready configuration
     - Verification enabled
     - Both code and password methods
 
-12. **[identity.schema.json](identity.schema.json)** - Identity schema example
+14. **[identity.schema.json](identity.schema.json)** - Identity schema example
     - Email and phone verification
     - Code credentials configuration
     - TOS acceptance field
 
-13. **[docker-compose.verification-example.yml](docker-compose.verification-example.yml)** - Docker setup
+15. **[docker-compose.verification-example.yml](docker-compose.verification-example.yml)** - Docker setup
     - Kratos + PostgreSQL + MailSlurper
     - Ready to test immediately
     - Pre-configured for verification testing
 
-14. **[README_VERIFICATION_TESTING.md](README_VERIFICATION_TESTING.md)** - Testing guide
+16. **[README_VERIFICATION_TESTING.md](README_VERIFICATION_TESTING.md)** - Testing guide
     - How to use the Docker setup
     - API testing with curl
     - Common troubleshooting
@@ -94,20 +104,32 @@ This repository contains comprehensive documentation about Ory Kratos (v25.4.0) 
 
 ### 🚨 Getting "Code Invalid or Already Used" Error?
 
-**Read this first**: [QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)
+**For Registration**: [QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)  
+**For Login**: [FIX_LOGIN_CODE_ERROR.md](FIX_LOGIN_CODE_ERROR.md) ⭐  
+**Cheatsheet (Both)**: [SMS_CODE_PATTERNS_CHEATSHEET.md](SMS_CODE_PATTERNS_CHEATSHEET.md)
 
 **TL;DR**: You need to save and use the updated flow:
 
 ```typescript
-// ❌ Wrong
+// ❌ Wrong (Registration)
 const { data: flow } = await kratos.createBrowserRegistrationFlow()
 await kratos.updateRegistrationFlow({ flow: flow.id, ... }) // Send SMS
 await kratos.updateRegistrationFlow({ flow: flow.id, ... }) // Submit code ❌
 
-// ✅ Correct
+// ✅ Correct (Registration)
 const { data: flow } = await kratos.createBrowserRegistrationFlow()
 const { data: updatedFlow } = await kratos.updateRegistrationFlow({ flow: flow.id, ... })
 await kratos.updateRegistrationFlow({ flow: updatedFlow.id, ... }) // ✅
+
+// ❌ Wrong (Login)
+const { data: flow } = await kratos.createBrowserLoginFlow()
+await kratos.updateLoginFlow({ flow: flow.id, ... }) // Send SMS
+await kratos.updateLoginFlow({ flow: flow.id, ... }) // Submit code ❌
+
+// ✅ Correct (Login)
+const { data: flow } = await kratos.createBrowserLoginFlow()
+const { data: updatedFlow } = await kratos.updateLoginFlow({ flow: flow.id, ... })
+await kratos.updateLoginFlow({ flow: updatedFlow.id, ... }) // ✅
 ```
 
 ### How to Submit SMS Codes (5 minutes)
