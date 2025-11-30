@@ -11,22 +11,44 @@ This repository contains comprehensive documentation about Ory Kratos (v25.4.0) 
    - How does verification work with the code method?
    - Quick configuration examples
 
+### SMS/Code Submission (NEW!)
+
+2. **[SUBMIT_SMS_CODE_SDK_GUIDE.md](SUBMIT_SMS_CODE_SDK_GUIDE.md)** - **How to submit SMS codes**
+   - Complete SDK method guide
+   - React and Vue examples
+   - Browser API examples
+   - Error handling
+
+3. **[SMS_CODE_QUICK_REFERENCE.md](SMS_CODE_QUICK_REFERENCE.md)** - Quick reference
+   - The exact SDK method you need
+   - Copy-paste examples
+   - React hooks
+
+4. **[TROUBLESHOOT_INVALID_CODE_ERROR.md](TROUBLESHOOT_INVALID_CODE_ERROR.md)** - **Troubleshooting guide**
+   - "Code invalid or already used" error
+   - Common causes and solutions
+   - Working code example
+
+5. **[QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)** - Instant fix
+   - The one thing you're probably doing wrong
+   - Side-by-side comparison
+
 ### Deep Dive on Auto-Verification
 
-2. **[CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md](CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md)** - **START HERE for understanding auto-verification**
+6. **[CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md](CODE_METHOD_AUTO_VERIFICATION_EXPLAINED.md)** - **START HERE for understanding auto-verification**
    - Detailed explanation with actual source code
    - Shows the exact functions that perform verification
    - Database schema and field changes
    - Security implications and why it works
    - Comparison with password method
 
-3. **[VISUAL_VERIFICATION_FLOW.md](VISUAL_VERIFICATION_FLOW.md)** - Visual diagrams
+7. **[VISUAL_VERIFICATION_FLOW.md](VISUAL_VERIFICATION_FLOW.md)** - Visual diagrams
    - Complete flow diagrams
    - Side-by-side comparisons
    - Database state transitions
    - Security reasoning visualized
 
-4. **[TEST_AUTO_VERIFICATION.md](TEST_AUTO_VERIFICATION.md)** - Practical testing guide
+8. **[TEST_AUTO_VERIFICATION.md](TEST_AUTO_VERIFICATION.md)** - Practical testing guide
    - 10 different tests to observe verification in action
    - SQL queries to watch database changes
    - Timing tests proving instant verification
@@ -34,41 +56,77 @@ This repository contains comprehensive documentation about Ory Kratos (v25.4.0) 
 
 ### Configuration Guides
 
-5. **[KRATOS_VERIFICATION_SETUP.md](KRATOS_VERIFICATION_SETUP.md)** - Complete setup guide
+9. **[KRATOS_VERIFICATION_SETUP.md](KRATOS_VERIFICATION_SETUP.md)** - Complete setup guide
    - How to configure verification in Kratos
    - Identity schema setup
    - Courier configuration
    - Common scenarios and use cases
 
-6. **[VERIFICATION_HOOKS_QUICK_REFERENCE.md](VERIFICATION_HOOKS_QUICK_REFERENCE.md)** - Quick reference
-   - Hook combinations and their effects
-   - When to use each hook
-   - Configuration examples
-   - Best practices
+10. **[VERIFICATION_HOOKS_QUICK_REFERENCE.md](VERIFICATION_HOOKS_QUICK_REFERENCE.md)** - Quick reference
+    - Hook combinations and their effects
+    - When to use each hook
+    - Configuration examples
+    - Best practices
 
 ### Ready-to-Use Files
 
-7. **[kratos-verification-example.yml](kratos-verification-example.yml)** - Complete Kratos config
-   - Production-ready configuration
-   - Verification enabled
-   - Both code and password methods
+11. **[kratos-verification-example.yml](kratos-verification-example.yml)** - Complete Kratos config
+    - Production-ready configuration
+    - Verification enabled
+    - Both code and password methods
 
-8. **[identity.schema.json](identity.schema.json)** - Identity schema example
-   - Email and phone verification
-   - Code credentials configuration
-   - TOS acceptance field
+12. **[identity.schema.json](identity.schema.json)** - Identity schema example
+    - Email and phone verification
+    - Code credentials configuration
+    - TOS acceptance field
 
-9. **[docker-compose.verification-example.yml](docker-compose.verification-example.yml)** - Docker setup
-   - Kratos + PostgreSQL + MailSlurper
-   - Ready to test immediately
-   - Pre-configured for verification testing
+13. **[docker-compose.verification-example.yml](docker-compose.verification-example.yml)** - Docker setup
+    - Kratos + PostgreSQL + MailSlurper
+    - Ready to test immediately
+    - Pre-configured for verification testing
 
-10. **[README_VERIFICATION_TESTING.md](README_VERIFICATION_TESTING.md)** - Testing guide
+14. **[README_VERIFICATION_TESTING.md](README_VERIFICATION_TESTING.md)** - Testing guide
     - How to use the Docker setup
     - API testing with curl
     - Common troubleshooting
 
 ## 🎯 Quick Start
+
+### 🚨 Getting "Code Invalid or Already Used" Error?
+
+**Read this first**: [QUICK_FIX_INVALID_CODE.md](QUICK_FIX_INVALID_CODE.md)
+
+**TL;DR**: You need to save and use the updated flow:
+
+```typescript
+// ❌ Wrong
+const { data: flow } = await kratos.createBrowserRegistrationFlow()
+await kratos.updateRegistrationFlow({ flow: flow.id, ... }) // Send SMS
+await kratos.updateRegistrationFlow({ flow: flow.id, ... }) // Submit code ❌
+
+// ✅ Correct
+const { data: flow } = await kratos.createBrowserRegistrationFlow()
+const { data: updatedFlow } = await kratos.updateRegistrationFlow({ flow: flow.id, ... })
+await kratos.updateRegistrationFlow({ flow: updatedFlow.id, ... }) // ✅
+```
+
+### How to Submit SMS Codes (5 minutes)
+
+**Read**: [SMS_CODE_QUICK_REFERENCE.md](SMS_CODE_QUICK_REFERENCE.md)
+
+**SDK Method**:
+```typescript
+// Submit the SMS code
+await kratos.updateRegistrationFlow({
+  flow: flowId,
+  updateRegistrationFlowBody: {
+    method: "code",
+    code: "123456",  // ← SMS code
+    traits: { phone: "+1234567890" },
+    csrf_token: csrfToken
+  }
+})
+```
 
 ### Understanding Auto-Verification (5 minutes)
 
