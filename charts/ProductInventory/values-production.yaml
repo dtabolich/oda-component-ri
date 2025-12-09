@@ -1,0 +1,136 @@
+# Production Environment Values for ProductInventory
+# Override default values for production environment
+
+environment: production
+replicaCount: 3
+
+image:
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+service:
+  type: ClusterIP
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: productinventory.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productinventory-prod-tls
+      hosts:
+        - productinventory.yourdomain.com
+
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 100Gi
+    storageClass: premium
+  auth:
+    enabled: true
+  replication:
+    enabled: true
+    replicas: 3
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"
+
+config:
+  logLevel: warn
+  nodeEnv: production
+  enableDebug: false
+  corsEnabled: true
+  rateLimitEnabled: true
+  maxRequestsPerMinute: 1000
+  enableMetrics: true
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 70
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+podAnnotations:
+  environment: production
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/metrics"
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - productinventory
+        topologyKey: kubernetes.io/hostname
+
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+
+backup:
+  enabled: true
+  schedule: "0 1 * * *"
+  retention: 30

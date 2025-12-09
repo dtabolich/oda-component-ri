@@ -1,0 +1,117 @@
+# Staging Environment Values for ProductCatalog
+# Override default values for staging environment
+
+# Environment identifier
+environment: staging
+
+# Replica count for staging (production-like)
+replicaCount: 2
+
+# Image configuration
+image:
+  pullPolicy: IfNotPresent
+  # tag will be set by pipeline
+
+# Resource limits for staging (~50% of production)
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations: {}
+
+# Ingress configuration for staging
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+  hosts:
+    - host: productcatalog-staging.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productcatalog-staging-tls
+      hosts:
+        - productcatalog-staging.yourdomain.com
+
+# MongoDB configuration for staging
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: standard
+  auth:
+    enabled: true
+  replication:
+    enabled: true
+    replicas: 2
+
+# Application configuration
+config:
+  logLevel: info
+  nodeEnv: staging
+  enableDebug: false
+  corsEnabled: true
+  rateLimitEnabled: true
+  maxRequestsPerMinute: 100
+
+# Auto-scaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Probes configuration
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  capabilities:
+    drop:
+      - ALL
+
+# Pod annotations
+podAnnotations:
+  environment: staging
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/metrics"
+
+# Network policies
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress

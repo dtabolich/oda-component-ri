@@ -1,0 +1,222 @@
+# CI/CD Pipeline - Build and Test
+# Triggers on all branches for continuous integration
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - release/*
+      - feature/*
+      - bugfix/*
+      - hotfix/*
+  paths:
+    exclude:
+      - README.md
+      - docs/**
+      - '**/*.md'
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+      - release/*
+  paths:
+    exclude:
+      - README.md
+      - docs/**
+      - '**/*.md'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: acr-connection
+  - name: nodeVersion
+    value: '18.x'
+  - name: isMainBranch
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - name: isDevelopBranch
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  - name: isReleaseBranch
+    value: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')]
+
+stages:
+  # Stage 1: Build and Unit Test
+  - stage: BuildAndTest
+    displayName: 'Build and Unit Test'
+    jobs:
+      # ProductCatalog Microservices
+      - job: BuildProductCatalog
+        displayName: 'Build ProductCatalog Services'
+        strategy:
+          matrix:
+            ProductCatalogAPI:
+              servicePath: 'source/ProductCatalog/productCatalogMicroservice'
+              serviceName: 'productcatalogapi'
+            PartyRoleAPI:
+              servicePath: 'source/ProductCatalog/partyRoleMicroservice'
+              serviceName: 'partyroleapi'
+            PromotionAPI:
+              servicePath: 'source/ProductCatalog/promotionManagementMicroservice'
+              serviceName: 'promotionapi'
+            MetricsAPI:
+              servicePath: 'source/ProductCatalog/metricsAPIMicroservice'
+              serviceName: 'metricsapi'
+        steps:
+          - template: templates/build-microservice.yml
+            parameters:
+              servicePath: $(servicePath)
+              serviceName: $(serviceName)
+              nodeVersion: $(nodeVersion)
+
+      # ProductInventory Microservices
+      - job: BuildProductInventory
+        displayName: 'Build ProductInventory Services'
+        strategy:
+          matrix:
+            ProductInventoryAPI:
+              servicePath: 'source/ProductInventory/productInventoryMicroservice'
+              serviceName: 'productinventoryapi'
+            PartyRoleAPI:
+              servicePath: 'source/ProductInventory/partyRoleMicroservice'
+              serviceName: 'partyroleapi-inventory'
+        steps:
+          - template: templates/build-microservice.yml
+            parameters:
+              servicePath: $(servicePath)
+              serviceName: $(serviceName)
+              nodeVersion: $(nodeVersion)
+
+  # Stage 2: Code Quality and Security
+  - stage: QualityAndSecurity
+    displayName: 'Code Quality and Security Scanning'
+    dependsOn: BuildAndTest
+    condition: succeeded()
+    jobs:
+      - job: SecurityScan
+        displayName: 'Security and Compliance Scan'
+        steps:
+          - template: templates/security-scan.yml
+            parameters:
+              scanType: 'full'
+
+      - job: CodeQuality
+        displayName: 'Code Quality Analysis'
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: 'Install Node.js'
+
+          # Install SonarCloud extension or use SonarQube
+          # Uncomment and configure if using SonarQube/SonarCloud
+          # - task: SonarCloudPrepare@1
+          #   inputs:
+          #     SonarCloud: 'SonarCloud-Connection'
+          #     organization: 'your-org'
+          #     scannerMode: 'CLI'
+          #     configMode: 'manual'
+
+          - script: |
+              echo "Running code quality checks..."
+              # Add linting, code coverage, etc.
+              find source -name "package.json" -type f -not -path "*/node_modules/*" | while read package; do
+                dir=$(dirname "$package")
+                echo "Checking $dir"
+                cd $dir
+                if [ -f "package.json" ]; then
+                  npm install --quiet
+                  npm run lint || echo "No lint script found"
+                fi
+                cd -
+              done
+            displayName: 'Run Linters'
+
+  # Stage 3: Build Docker Images (only for main, develop, release branches)
+  - stage: BuildDockerImages
+    displayName: 'Build Docker Images'
+    dependsOn: QualityAndSecurity
+    condition: and(succeeded(), or(eq(variables.isMainBranch, true), eq(variables.isDevelopBranch, true), eq(variables.isReleaseBranch, true)))
+    jobs:
+      - job: BuildImages
+        displayName: 'Build and Push Docker Images'
+        steps:
+          - template: templates/docker-build-push.yml
+            parameters:
+              containerRegistry: '$(containerRegistry)'
+              buildForProduction: false
+
+  # Stage 4: Integration Tests (only for develop and release branches)
+  - stage: IntegrationTests
+    displayName: 'Integration Tests'
+    dependsOn: BuildDockerImages
+    condition: and(succeeded(), or(eq(variables.isDevelopBranch, true), eq(variables.isReleaseBranch, true)))
+    jobs:
+      - job: RunIntegrationTests
+        displayName: 'Run Integration Tests'
+        steps:
+          - checkout: self
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: 'Install Node.js'
+
+          - script: |
+              echo "Running integration tests..."
+              # Add your integration test commands here
+              # Example: npm run test:integration
+            displayName: 'Integration Tests'
+
+  # Stage 5: Package Helm Charts (only for release branches and main)
+  - stage: PackageHelmCharts
+    displayName: 'Package Helm Charts'
+    dependsOn: IntegrationTests
+    condition: and(succeeded(), or(eq(variables.isMainBranch, true), eq(variables.isReleaseBranch, true)))
+    jobs:
+      - job: PackageCharts
+        displayName: 'Package Helm Charts'
+        steps:
+          - template: templates/helm-package.yml
+            parameters:
+              chartPath: 'charts/ProductCatalog'
+              chartName: 'productcatalog'
+
+          - template: templates/helm-package.yml
+            parameters:
+              chartPath: 'charts/ProductInventory'
+              chartName: 'productinventory'
+
+  # Stage 6: Publish Pipeline Artifacts
+  - stage: PublishArtifacts
+    displayName: 'Publish Pipeline Artifacts'
+    dependsOn: 
+      - BuildDockerImages
+      - PackageHelmCharts
+    condition: succeeded()
+    jobs:
+      - job: PublishBuildArtifacts
+        displayName: 'Publish Build Artifacts'
+        steps:
+          - checkout: none
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'drop'
+              publishLocation: 'Container'
+            displayName: 'Publish Artifacts'
+
+          - script: |
+              echo "Pipeline Summary"
+              echo "=================="
+              echo "Branch: $(Build.SourceBranch)"
+              echo "Commit: $(Build.SourceVersion)"
+              echo "Build ID: $(Build.BuildId)"
+              echo "Build Number: $(Build.BuildNumber)"
+            displayName: 'Pipeline Summary'

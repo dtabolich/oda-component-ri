@@ -1,0 +1,244 @@
+# Hotfix Pipeline - Fast-track pipeline for critical fixes
+# Triggers on hotfix branches with expedited process
+
+trigger:
+  branches:
+    include:
+      - hotfix/*
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: acr-connection
+  - group: env-production-config
+  - group: env-secrets-production
+  - name: helmVersion
+    value: '3.12.0'
+
+stages:
+  # Stage 1: Build and Test (Fast)
+  - stage: HotfixBuild
+    displayName: 'Hotfix Build and Test'
+    jobs:
+      - job: BuildHotfix
+        displayName: 'Build Hotfix'
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Install Node.js'
+
+          # Build only the affected service (customize based on branch name or path)
+          - script: |
+              echo "Building hotfix..."
+              # Determine which service needs hotfix
+              # This is a simplified example - customize based on your needs
+              
+              if [[ "$(Build.SourceBranch)" == *"productcatalog"* ]]; then
+                echo "Building ProductCatalog services..."
+                cd source/ProductCatalog/productCatalogMicroservice
+                npm ci
+                npm test
+              elif [[ "$(Build.SourceBranch)" == *"productinventory"* ]]; then
+                echo "Building ProductInventory services..."
+                cd source/ProductInventory/productInventoryMicroservice
+                npm ci
+                npm test
+              else
+                echo "Building all services..."
+                # Build all if not specific
+              fi
+            displayName: 'Build and Test'
+
+          # Quick security scan (only critical vulnerabilities)
+          - script: |
+              echo "Quick security scan..."
+              npm audit --audit-level=critical
+            displayName: 'Security Scan (Critical Only)'
+            continueOnError: true
+
+  # Stage 2: Build Docker Images
+  - stage: BuildHotfixImages
+    displayName: 'Build Hotfix Docker Images'
+    dependsOn: HotfixBuild
+    condition: succeeded()
+    jobs:
+      - job: BuildImages
+        displayName: 'Build Docker Images'
+        steps:
+          - template: templates/docker-build-push.yml
+            parameters:
+              containerRegistry: '$(containerRegistry)'
+              buildForProduction: true
+
+  # Stage 3: Deploy to Staging (Quick Validation)
+  - stage: HotfixStaging
+    displayName: 'Deploy to Staging (Validation)'
+    dependsOn: BuildHotfixImages
+    condition: succeeded()
+    variables:
+      - group: env-staging-config
+    jobs:
+      - deployment: DeployToStaging
+        displayName: 'Deploy Hotfix to Staging'
+        environment: 'Staging'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: HelmInstaller@1
+                  inputs:
+                    helmVersionToInstall: $(helmVersion)
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy Hotfix to Staging'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksStagingConnection)'
+                    namespace: '$(stagingNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductCatalog'
+                    releaseName: 'productcatalog-staging'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                    valueFile: 'charts/ProductCatalog/values-staging.yaml'
+                    install: true
+                    waitForExecution: true
+
+                - script: |
+                    echo "Validating hotfix in staging..."
+                    sleep 30
+                    kubectl get pods -n $(stagingNamespace)
+                    # Add specific validation for the hotfix
+                  displayName: 'Validate Hotfix'
+
+  # Stage 4: Deploy to Production (Expedited Approval)
+  - stage: HotfixProduction
+    displayName: 'Deploy Hotfix to Production'
+    dependsOn: HotfixStaging
+    condition: succeeded()
+    jobs:
+      - deployment: DeployHotfixToProduction
+        displayName: 'Deploy Hotfix to Production'
+        environment: 'Production-Hotfix'  # Separate environment with expedited approval
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: HelmInstaller@1
+                  inputs:
+                    helmVersionToInstall: $(helmVersion)
+
+                # Backup current production state
+                - script: |
+                    echo "Backing up production state..."
+                    kubectl get all -n $(productionNamespace) -o yaml > hotfix-backup-$(Build.BuildId).yaml
+                  displayName: 'Backup Production'
+
+                # Deploy hotfix
+                - task: HelmDeploy@0
+                  displayName: 'Deploy Hotfix to Production'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksProdConnection)'
+                    namespace: '$(productionNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductCatalog'
+                    releaseName: 'productcatalog-prod'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                    valueFile: 'charts/ProductCatalog/values-production.yaml'
+                    install: true
+                    waitForExecution: true
+                    arguments: '--timeout 5m --atomic'
+
+                # Critical health checks
+                - script: |
+                    echo "Running critical health checks..."
+                    sleep 60
+                    
+                    # Verify pods are running
+                    kubectl get pods -n $(productionNamespace)
+                    
+                    # Check for errors in logs
+                    kubectl logs -n $(productionNamespace) -l app=productcatalog --tail=100
+                    
+                    echo "Health check completed"
+                  displayName: 'Critical Health Checks'
+
+                # Monitor for 5 minutes
+                - script: |
+                    echo "Monitoring hotfix deployment..."
+                    for i in {1..10}; do
+                      echo "Check $i/10..."
+                      kubectl get pods -n $(productionNamespace)
+                      sleep 30
+                    done
+                  displayName: 'Monitor Deployment'
+
+                # Tag the hotfix
+                - script: |
+                    git config user.email "azure-devops@example.com"
+                    git config user.name "Azure DevOps"
+                    HOTFIX_VERSION=$(echo $(Build.SourceBranch) | sed 's/refs\/heads\/hotfix\///')
+                    git tag -a "hotfix-$HOTFIX_VERSION-$(Build.BuildId)" -m "Hotfix $HOTFIX_VERSION"
+                  displayName: 'Tag Hotfix'
+
+  # Stage 5: Post-Hotfix Actions
+  - stage: PostHotfix
+    displayName: 'Post-Hotfix Actions'
+    dependsOn: HotfixProduction
+    condition: succeeded()
+    jobs:
+      - job: PostHotfixTasks
+        displayName: 'Post-Hotfix Tasks'
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "========================================="
+              echo "HOTFIX DEPLOYMENT REPORT"
+              echo "========================================="
+              echo ""
+              echo "Hotfix Branch: $(Build.SourceBranch)"
+              echo "Build ID: $(Build.BuildId)"
+              echo "Deployed Version: $(Build.BuildNumber)"
+              echo "Deployment Time: $(date)"
+              echo ""
+              echo "IMPORTANT: Remember to:"
+              echo "1. Merge this hotfix back to main branch"
+              echo "2. Merge hotfix to develop branch"
+              echo "3. Schedule post-mortem meeting"
+              echo "4. Update documentation"
+              echo "5. Notify stakeholders"
+              echo ""
+              echo "========================================="
+            displayName: 'Generate Hotfix Report'
+
+          # Create work item reminder (if Azure Boards integration enabled)
+          - script: |
+              echo "Creating follow-up tasks..."
+              # Use Azure DevOps CLI to create work items
+              # az boards work-item create --title "Merge hotfix $(Build.SourceBranch) to main"
+              # az boards work-item create --title "Schedule post-mortem for hotfix $(Build.BuildId)"
+            displayName: 'Create Follow-up Tasks'
+            condition: succeeded()
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'hotfix-$(Build.BuildId)'
+              publishLocation: 'Container'
+            displayName: 'Publish Hotfix Artifacts'

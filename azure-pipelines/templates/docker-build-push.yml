@@ -1,0 +1,144 @@
+# Reusable Template: Build and Push Docker Images
+# Parameters:
+#   containerRegistry: Azure Container Registry connection
+#   buildForProduction: Whether to build production-ready images
+
+parameters:
+  - name: containerRegistry
+    type: string
+  - name: buildForProduction
+    type: boolean
+    default: false
+
+steps:
+  - checkout: self
+    displayName: 'Checkout Code'
+
+  - task: Docker@2
+    displayName: 'Login to Azure Container Registry'
+    inputs:
+      command: 'login'
+      containerRegistry: ${{ parameters.containerRegistry }}
+
+  # ProductCatalog Images
+  - task: Docker@2
+    displayName: 'Build ProductCatalog API'
+    inputs:
+      command: 'build'
+      repository: 'productcatalogapi'
+      dockerfile: 'source/ProductCatalog/productCatalogMicroservice/Dockerfile'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+      arguments: '--build-arg NODE_ENV=${{ parameters.buildForProduction }}'
+
+  - task: Docker@2
+    displayName: 'Push ProductCatalog API'
+    inputs:
+      command: 'push'
+      repository: 'productcatalogapi'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Build PartyRole API'
+    inputs:
+      command: 'build'
+      repository: 'partyroleapi'
+      dockerfile: 'source/ProductCatalog/partyRoleMicroservice/Dockerfile'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Push PartyRole API'
+    inputs:
+      command: 'push'
+      repository: 'partyroleapi'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Build Promotion Management API'
+    inputs:
+      command: 'build'
+      repository: 'promotionapi'
+      dockerfile: 'source/ProductCatalog/promotionManagementMicroservice/Dockerfile'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Push Promotion Management API'
+    inputs:
+      command: 'push'
+      repository: 'promotionapi'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  # ProductInventory Images
+  - task: Docker@2
+    displayName: 'Build ProductInventory API'
+    inputs:
+      command: 'build'
+      repository: 'productinventoryapi'
+      dockerfile: 'source/ProductInventory/productInventoryMicroservice/Dockerfile'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    displayName: 'Push ProductInventory API'
+    inputs:
+      command: 'push'
+      repository: 'productinventoryapi'
+      containerRegistry: ${{ parameters.containerRegistry }}
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)-$(Build.BuildId)
+        latest
+
+  # Scan images for vulnerabilities (if production build)
+  - ${{ if eq(parameters.buildForProduction, true) }}:
+    - script: |
+        echo "Scanning images for vulnerabilities..."
+        # Install Trivy
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install trivy -y
+        
+        # Scan images
+        trivy image --severity HIGH,CRITICAL $(containerRegistry)/productcatalogapi:$(Build.BuildNumber)
+        trivy image --severity HIGH,CRITICAL $(containerRegistry)/partyroleapi:$(Build.BuildNumber)
+        trivy image --severity HIGH,CRITICAL $(containerRegistry)/promotionapi:$(Build.BuildNumber)
+        trivy image --severity HIGH,CRITICAL $(containerRegistry)/productinventoryapi:$(Build.BuildNumber)
+      displayName: 'Scan Images for Vulnerabilities'
+      continueOnError: true
+
+  - script: |
+      echo "Docker Build Summary"
+      echo "===================="
+      echo "Images built and pushed:"
+      echo "- productcatalogapi:$(Build.BuildNumber)"
+      echo "- partyroleapi:$(Build.BuildNumber)"
+      echo "- promotionapi:$(Build.BuildNumber)"
+      echo "- productinventoryapi:$(Build.BuildNumber)"
+    displayName: 'Docker Build Summary'

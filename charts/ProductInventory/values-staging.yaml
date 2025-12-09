@@ -1,0 +1,68 @@
+# Staging Environment Values for ProductInventory
+# Override default values for staging environment
+
+environment: staging
+replicaCount: 2
+
+image:
+  pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+  hosts:
+    - host: productinventory-staging.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productinventory-staging-tls
+      hosts:
+        - productinventory-staging.yourdomain.com
+
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 20Gi
+  auth:
+    enabled: true
+  replication:
+    enabled: true
+    replicas: 2
+
+config:
+  logLevel: info
+  nodeEnv: staging
+  enableDebug: false
+  corsEnabled: true
+  rateLimitEnabled: true
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+podAnnotations:
+  environment: staging
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"

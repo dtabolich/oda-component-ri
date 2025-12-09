@@ -1,0 +1,94 @@
+# Development Environment Values for ProductCatalog
+# Override default values for development environment
+
+# Environment identifier
+environment: development
+
+# Replica count for development
+replicaCount: 1
+
+# Image configuration
+image:
+  pullPolicy: Always
+  tag: latest
+
+# Resource limits for development (minimal)
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations: {}
+
+# Ingress configuration for development
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  hosts:
+    - host: productcatalog-dev.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productcatalog-dev-tls
+      hosts:
+        - productcatalog-dev.yourdomain.com
+
+# MongoDB configuration for development
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 8Gi
+  auth:
+    enabled: true
+    # Use development credentials (should be in variable group)
+
+# Application configuration
+config:
+  logLevel: debug
+  nodeEnv: development
+  enableDebug: true
+  corsEnabled: true
+  rateLimitEnabled: false
+
+# Auto-scaling disabled in development
+autoscaling:
+  enabled: false
+
+# Probes configuration (relaxed for development)
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Pod disruption budget disabled for development
+podDisruptionBudget:
+  enabled: false
+
+# Security context (relaxed for development)
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 1000
+
+# Pod annotations for development
+podAnnotations:
+  environment: development
+  sidecar.istio.io/inject: "false"  # Disable service mesh in dev

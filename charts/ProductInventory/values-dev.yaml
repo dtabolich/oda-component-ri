@@ -1,0 +1,55 @@
+# Development Environment Values for ProductInventory
+# Override default values for development environment
+
+environment: development
+replicaCount: 1
+
+image:
+  pullPolicy: Always
+  tag: latest
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  hosts:
+    - host: productinventory-dev.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productinventory-dev-tls
+      hosts:
+        - productinventory-dev.yourdomain.com
+
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 8Gi
+  auth:
+    enabled: true
+
+config:
+  logLevel: debug
+  nodeEnv: development
+  enableDebug: true
+  corsEnabled: true
+
+autoscaling:
+  enabled: false
+
+podAnnotations:
+  environment: development

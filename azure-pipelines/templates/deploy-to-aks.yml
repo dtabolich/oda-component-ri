@@ -1,0 +1,111 @@
+# Reusable Template: Deploy to Azure Kubernetes Service
+# Parameters:
+#   environment: Target environment (dev, staging, production)
+#   namespace: Kubernetes namespace
+#   aksConnection: AKS service connection name
+#   chartPath: Path to Helm chart
+#   releaseName: Helm release name
+#   valuesFile: Values file for the environment
+#   imageTag: Docker image tag to deploy
+
+parameters:
+  - name: environment
+    type: string
+  - name: namespace
+    type: string
+  - name: aksConnection
+    type: string
+  - name: chartPath
+    type: string
+  - name: releaseName
+    type: string
+  - name: valuesFile
+    type: string
+  - name: imageTag
+    type: string
+
+steps:
+  - checkout: self
+    displayName: 'Checkout Code'
+
+  - task: HelmInstaller@1
+    displayName: 'Install Helm'
+    inputs:
+      helmVersionToInstall: '3.12.0'
+
+  # Create namespace if it doesn't exist
+  - task: Kubernetes@1
+    displayName: 'Create Namespace'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceEndpoint: ${{ parameters.aksConnection }}
+      command: 'apply'
+      useConfigurationFile: true
+      inline: |
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: ${{ parameters.namespace }}
+    continueOnError: true
+
+  # Deploy using Helm
+  - task: HelmDeploy@0
+    displayName: 'Deploy ${{ parameters.releaseName }}'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceConnection: ${{ parameters.aksConnection }}
+      namespace: ${{ parameters.namespace }}
+      command: 'upgrade'
+      chartType: 'FilePath'
+      chartPath: ${{ parameters.chartPath }}
+      releaseName: ${{ parameters.releaseName }}
+      overrideValues: |
+        image.tag=${{ parameters.imageTag }}
+        environment=${{ parameters.environment }}
+      valueFile: ${{ parameters.valuesFile }}
+      install: true
+      waitForExecution: true
+      arguments: '--timeout 10m --atomic --cleanup-on-fail'
+
+  # Wait for rollout to complete
+  - script: |
+      echo "Waiting for deployment rollout..."
+      kubectl config use-context ${{ parameters.aksConnection }}
+      kubectl rollout status deployment -n ${{ parameters.namespace }} --timeout=5m
+    displayName: 'Wait for Rollout'
+
+  # Verify deployment health
+  - script: |
+      echo "Verifying deployment health..."
+      kubectl get pods -n ${{ parameters.namespace }}
+      kubectl get services -n ${{ parameters.namespace }}
+      
+      # Check if all pods are ready
+      NOT_READY=$(kubectl get pods -n ${{ parameters.namespace }} -o jsonpath='{.items[?(@.status.phase!="Running")].metadata.name}')
+      if [ ! -z "$NOT_READY" ]; then
+        echo "Warning: Some pods are not in Running state: $NOT_READY"
+      fi
+    displayName: 'Verify Deployment Health'
+
+  # Run smoke tests
+  - script: |
+      echo "Running smoke tests for ${{ parameters.environment }}..."
+      sleep 10
+      
+      # Get service endpoints
+      kubectl get services -n ${{ parameters.namespace }}
+      
+      # Basic health check (customize based on your services)
+      echo "Performing basic health checks..."
+      # Add your health check commands here
+    displayName: 'Smoke Tests'
+
+  - script: |
+      echo "Deployment Summary"
+      echo "=================="
+      echo "Environment: ${{ parameters.environment }}"
+      echo "Namespace: ${{ parameters.namespace }}"
+      echo "Release: ${{ parameters.releaseName }}"
+      echo "Image Tag: ${{ parameters.imageTag }}"
+      echo "Status: Deployed"
+    displayName: 'Deployment Summary'
