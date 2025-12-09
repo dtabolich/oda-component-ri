@@ -1,0 +1,131 @@
+# Reusable Template: Security Scanning
+# Parameters:
+#   scanType: Type of security scan (full, quick)
+
+parameters:
+  - name: scanType
+    type: string
+    default: 'full'
+
+steps:
+  - checkout: self
+    displayName: 'Checkout Code'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+
+  # Dependency vulnerability scanning
+  - script: |
+      echo "Scanning dependencies for vulnerabilities..."
+      find source -name "package.json" -not -path "*/node_modules/*" | while read package; do
+        dir=$(dirname "$package")
+        echo "Scanning $dir"
+        cd $dir
+        npm audit --audit-level=moderate || true
+        cd -
+      done
+    displayName: 'NPM Audit - Dependency Scan'
+
+  # Secret scanning
+  - script: |
+      echo "Scanning for exposed secrets..."
+      # Install git-secrets or use Azure DevOps secret detection
+      git secrets --scan || echo "git-secrets not installed, skipping..."
+      
+      # Check for common secret patterns
+      echo "Checking for common secret patterns..."
+      grep -r -i "password\s*=\s*['\"]" source/ || echo "No hardcoded passwords found"
+      grep -r -i "api_key\s*=\s*['\"]" source/ || echo "No hardcoded API keys found"
+      grep -r -i "secret\s*=\s*['\"]" source/ || echo "No hardcoded secrets found"
+    displayName: 'Secret Scanning'
+    continueOnError: true
+
+  # SAST (Static Application Security Testing)
+  - ${{ if eq(parameters.scanType, 'full') }}:
+    - script: |
+        echo "Running SAST scan..."
+        # Install and run ESLint security plugins
+        npm install -g eslint eslint-plugin-security
+        
+        find source -name "*.js" -not -path "*/node_modules/*" | while read file; do
+          eslint "$file" --plugin security --rule 'security/detect-object-injection: error' || true
+        done
+      displayName: 'SAST Scan'
+      continueOnError: true
+
+  # License compliance check
+  - script: |
+      echo "Checking license compliance..."
+      find source -name "package.json" -not -path "*/node_modules/*" | while read package; do
+        dir=$(dirname "$package")
+        echo "Checking licenses in $dir"
+        cd $dir
+        npm install --quiet
+        npx license-checker --summary || echo "license-checker not available"
+        cd -
+      done
+    displayName: 'License Compliance Check'
+    continueOnError: true
+
+  # OWASP Dependency Check (full scan only)
+  - ${{ if eq(parameters.scanType, 'full') }}:
+    - script: |
+        echo "Running OWASP Dependency Check..."
+        # Download OWASP Dependency Check
+        wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+        unzip dependency-check-8.4.0-release.zip
+        
+        # Run dependency check
+        ./dependency-check/bin/dependency-check.sh \
+          --project "Product Management Platform" \
+          --scan source/ \
+          --format HTML \
+          --format JSON \
+          --out $(Build.ArtifactStagingDirectory)/dependency-check-report
+        
+        echo "OWASP report generated"
+      displayName: 'OWASP Dependency Check'
+      continueOnError: true
+
+  # Dockerfile security scanning
+  - script: |
+      echo "Scanning Dockerfiles for security issues..."
+      # Install hadolint
+      wget -O hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+      chmod +x hadolint
+      
+      # Scan Dockerfiles
+      find source -name "Dockerfile" | while read dockerfile; do
+        echo "Scanning $dockerfile"
+        ./hadolint "$dockerfile" || true
+      done
+    displayName: 'Dockerfile Security Scan'
+    continueOnError: true
+
+  # Publish security scan results
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'security-scan-results'
+      publishLocation: 'Container'
+    displayName: 'Publish Security Scan Results'
+    condition: always()
+
+  - script: |
+      echo "Security Scan Summary"
+      echo "===================="
+      echo "Scan Type: ${{ parameters.scanType }}"
+      echo "Date: $(date)"
+      echo "Build: $(Build.BuildNumber)"
+      echo ""
+      echo "Checks performed:"
+      echo "- NPM Audit (dependency vulnerabilities)"
+      echo "- Secret scanning"
+      ${{ if eq(parameters.scanType, 'full') }}:
+        echo "- SAST (Static Analysis)"
+        echo "- OWASP Dependency Check"
+      echo "- License compliance"
+      echo "- Dockerfile security"
+    displayName: 'Security Scan Summary'

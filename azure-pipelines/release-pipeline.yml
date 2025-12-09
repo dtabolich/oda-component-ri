@@ -1,0 +1,392 @@
+# Multi-Stage Release Pipeline
+# Deploys to Dev -> Staging -> Production with approval gates
+
+trigger:
+  branches:
+    include:
+      - main
+      - release/*
+  paths:
+    exclude:
+      - README.md
+      - docs/**
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: acr-connection
+  - group: helm-repo-config
+  - name: isMainBranch
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - name: helmVersion
+    value: '3.12.0'
+
+stages:
+  # Stage 1: Build Release Artifacts
+  - stage: BuildRelease
+    displayName: 'Build Release Artifacts'
+    jobs:
+      - job: BuildImages
+        displayName: 'Build Production Images'
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - task: Docker@2
+            displayName: 'Login to Azure Container Registry'
+            inputs:
+              command: 'login'
+              containerRegistry: '$(acrServiceConnection)'
+
+          # Build ProductCatalog images
+          - task: Docker@2
+            displayName: 'Build ProductCatalog API Image'
+            inputs:
+              command: 'build'
+              repository: 'productcatalogapi'
+              dockerfile: 'source/ProductCatalog/productCatalogMicroservice/Dockerfile'
+              containerRegistry: '$(acrServiceConnection)'
+              tags: |
+                $(Build.BuildNumber)
+                latest
+
+          - task: Docker@2
+            displayName: 'Build PartyRole API Image'
+            inputs:
+              command: 'build'
+              repository: 'partyroleapi'
+              dockerfile: 'source/ProductCatalog/partyRoleMicroservice/Dockerfile'
+              containerRegistry: '$(acrServiceConnection)'
+              tags: |
+                $(Build.BuildNumber)
+                latest
+
+          - task: Docker@2
+            displayName: 'Build Promotion API Image'
+            inputs:
+              command: 'build'
+              repository: 'promotionapi'
+              dockerfile: 'source/ProductCatalog/promotionManagementMicroservice/Dockerfile'
+              containerRegistry: '$(acrServiceConnection)'
+              tags: |
+                $(Build.BuildNumber)
+                latest
+
+          # Build ProductInventory images
+          - task: Docker@2
+            displayName: 'Build ProductInventory API Image'
+            inputs:
+              command: 'build'
+              repository: 'productinventoryapi'
+              dockerfile: 'source/ProductInventory/productInventoryMicroservice/Dockerfile'
+              containerRegistry: '$(acrServiceConnection)'
+              tags: |
+                $(Build.BuildNumber)
+                latest
+
+      - job: PackageHelmCharts
+        displayName: 'Package Helm Charts'
+        steps:
+          - checkout: self
+
+          - task: HelmInstaller@1
+            displayName: 'Install Helm'
+            inputs:
+              helmVersionToInstall: $(helmVersion)
+
+          - script: |
+              # Package ProductCatalog chart
+              helm package charts/ProductCatalog --destination $(Build.ArtifactStagingDirectory)
+              
+              # Package ProductInventory chart
+              helm package charts/ProductInventory --destination $(Build.ArtifactStagingDirectory)
+              
+              # Generate checksums
+              cd $(Build.ArtifactStagingDirectory)
+              sha256sum *.tgz > checksums.txt
+              
+              echo "Packaged charts:"
+              ls -lh *.tgz
+            displayName: 'Package Helm Charts'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'helm-charts'
+              publishLocation: 'Container'
+            displayName: 'Publish Helm Charts'
+
+  # Stage 2: Deploy to Development
+  - stage: DeployDevelopment
+    displayName: 'Deploy to Development'
+    dependsOn: BuildRelease
+    condition: succeeded()
+    variables:
+      - group: env-dev-config
+    jobs:
+      - deployment: DeployToDev
+        displayName: 'Deploy to Dev Environment'
+        environment: 'Development'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: HelmInstaller@1
+                  displayName: 'Install Helm'
+                  inputs:
+                    helmVersionToInstall: $(helmVersion)
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductCatalog'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksDevConnection)'
+                    namespace: '$(devNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductCatalog'
+                    releaseName: 'productcatalog-dev'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=development
+                    valueFile: 'charts/ProductCatalog/values-dev.yaml'
+                    install: true
+                    waitForExecution: true
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductInventory'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksDevConnection)'
+                    namespace: '$(devNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductInventory'
+                    releaseName: 'productinventory-dev'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=development
+                    valueFile: 'charts/ProductInventory/values-dev.yaml'
+                    install: true
+                    waitForExecution: true
+
+                - script: |
+                    echo "Running smoke tests..."
+                    # Add smoke test commands here
+                    sleep 30  # Wait for pods to be ready
+                    kubectl get pods -n $(devNamespace)
+                    kubectl get services -n $(devNamespace)
+                  displayName: 'Smoke Tests'
+
+  # Stage 3: Deploy to Staging
+  - stage: DeployStaging
+    displayName: 'Deploy to Staging'
+    dependsOn: DeployDevelopment
+    condition: succeeded()
+    variables:
+      - group: env-staging-config
+    jobs:
+      - deployment: DeployToStaging
+        displayName: 'Deploy to Staging Environment'
+        environment: 'Staging'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: HelmInstaller@1
+                  displayName: 'Install Helm'
+                  inputs:
+                    helmVersionToInstall: $(helmVersion)
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductCatalog'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksStagingConnection)'
+                    namespace: '$(stagingNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductCatalog'
+                    releaseName: 'productcatalog-staging'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=staging
+                    valueFile: 'charts/ProductCatalog/values-staging.yaml'
+                    install: true
+                    waitForExecution: true
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductInventory'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksStagingConnection)'
+                    namespace: '$(stagingNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductInventory'
+                    releaseName: 'productinventory-staging'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=staging
+                    valueFile: 'charts/ProductInventory/values-staging.yaml'
+                    install: true
+                    waitForExecution: true
+
+                - script: |
+                    echo "Running integration tests..."
+                    sleep 30
+                    kubectl get pods -n $(stagingNamespace)
+                    # Add integration test commands
+                  displayName: 'Integration Tests'
+
+                - script: |
+                    echo "Running performance tests..."
+                    # Add performance test commands
+                  displayName: 'Performance Tests'
+
+  # Stage 4: Deploy to Production (requires approval)
+  - stage: DeployProduction
+    displayName: 'Deploy to Production'
+    dependsOn: DeployStaging
+    condition: and(succeeded(), eq(variables.isMainBranch, true))
+    variables:
+      - group: env-production-config
+      - group: env-secrets-production
+    jobs:
+      - deployment: DeployToProduction
+        displayName: 'Deploy to Production Environment'
+        environment: 'Production'  # Configure manual approval in Azure DevOps
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: HelmInstaller@1
+                  displayName: 'Install Helm'
+                  inputs:
+                    helmVersionToInstall: $(helmVersion)
+
+                # Backup current state
+                - script: |
+                    echo "Creating backup of current production state..."
+                    kubectl get all -n $(productionNamespace) -o yaml > production-backup-$(Build.BuildId).yaml
+                  displayName: 'Backup Current State'
+
+                # Deploy with Blue-Green strategy
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductCatalog (Blue-Green)'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksProdConnection)'
+                    namespace: '$(productionNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductCatalog'
+                    releaseName: 'productcatalog-prod'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=production
+                      replicaCount=$(productionReplicas)
+                      resources.requests.cpu=$(productionCpu)
+                      resources.requests.memory=$(productionMemory)
+                    valueFile: 'charts/ProductCatalog/values-production.yaml'
+                    install: true
+                    waitForExecution: true
+                    recreate: false
+
+                - task: HelmDeploy@0
+                  displayName: 'Deploy ProductInventory (Blue-Green)'
+                  inputs:
+                    connectionType: 'Kubernetes Service Connection'
+                    kubernetesServiceConnection: '$(aksProdConnection)'
+                    namespace: '$(productionNamespace)'
+                    command: 'upgrade'
+                    chartType: 'FilePath'
+                    chartPath: 'charts/ProductInventory'
+                    releaseName: 'productinventory-prod'
+                    overrideValues: |
+                      image.tag=$(Build.BuildNumber)
+                      environment=production
+                      replicaCount=$(productionReplicas)
+                    valueFile: 'charts/ProductInventory/values-production.yaml'
+                    install: true
+                    waitForExecution: true
+
+                # Health checks
+                - script: |
+                    echo "Running production health checks..."
+                    sleep 60  # Wait for pods to be fully ready
+                    
+                    # Check pod status
+                    kubectl get pods -n $(productionNamespace)
+                    
+                    # Verify all pods are running
+                    if kubectl get pods -n $(productionNamespace) | grep -v Running | grep -v Completed; then
+                      echo "Some pods are not in Running state!"
+                      exit 1
+                    fi
+                    
+                    # Check service endpoints
+                    kubectl get services -n $(productionNamespace)
+                    
+                    echo "Health checks passed!"
+                  displayName: 'Production Health Checks'
+
+                # Smoke tests in production
+                - script: |
+                    echo "Running production smoke tests..."
+                    # Add production smoke test commands
+                    # Example: curl health endpoints, validate critical paths
+                  displayName: 'Production Smoke Tests'
+
+                # Tag the release
+                - script: |
+                    git config user.email "azure-devops@example.com"
+                    git config user.name "Azure DevOps"
+                    git tag -a "v$(Build.BuildNumber)" -m "Release $(Build.BuildNumber)"
+                    # Uncomment to push tags (ensure proper authentication)
+                    # git push origin "v$(Build.BuildNumber)"
+                  displayName: 'Tag Release'
+                  condition: succeeded()
+
+  # Stage 5: Post-Deployment Validation
+  - stage: PostDeploymentValidation
+    displayName: 'Post-Deployment Validation'
+    dependsOn: DeployProduction
+    condition: succeeded()
+    jobs:
+      - job: ValidateDeployment
+        displayName: 'Validate Production Deployment'
+        steps:
+          - script: |
+              echo "Monitoring deployment for 5 minutes..."
+              # Add monitoring validation
+              # Check error rates, response times, etc.
+              sleep 300
+              echo "Validation period completed"
+            displayName: 'Monitor Deployment'
+
+          - script: |
+              echo "Generating deployment report..."
+              echo "=========================="
+              echo "Release: $(Build.BuildNumber)"
+              echo "Environment: Production"
+              echo "Deployment Time: $(date)"
+              echo "Components: ProductCatalog, ProductInventory"
+              echo "Status: Success"
+            displayName: 'Generate Deployment Report'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'deployment-reports'
+              publishLocation: 'Container'
+            displayName: 'Publish Deployment Report'

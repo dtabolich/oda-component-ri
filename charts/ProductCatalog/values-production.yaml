@@ -1,0 +1,221 @@
+# Production Environment Values for ProductCatalog
+# Override default values for production environment
+
+# Environment identifier
+environment: production
+
+# Replica count for production (high availability)
+replicaCount: 3
+
+# Image configuration
+image:
+  pullPolicy: IfNotPresent
+  # tag will be set by pipeline - never use 'latest' in production
+
+# Resource limits for production
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+# Service configuration
+service:
+  type: ClusterIP
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+# Ingress configuration for production
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - host: productcatalog.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: productcatalog-prod-tls
+      hosts:
+        - productcatalog.yourdomain.com
+
+# MongoDB configuration for production
+mongodb:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 100Gi
+    storageClass: premium
+  auth:
+    enabled: true
+  replication:
+    enabled: true
+    replicas: 3
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"  # Daily at 2 AM
+
+# Application configuration
+config:
+  logLevel: warn
+  nodeEnv: production
+  enableDebug: false
+  corsEnabled: true
+  corsOrigins:
+    - "https://yourdomain.com"
+  rateLimitEnabled: true
+  maxRequestsPerMinute: 1000
+  enableMetrics: true
+  enableTracing: true
+
+# Auto-scaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 30
+
+# Probes configuration (strict for production)
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+# Startup probe for production
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+# Pod disruption budget (high availability)
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Security context (strict)
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# Pod security policy
+podSecurityPolicy:
+  enabled: true
+
+# Pod annotations
+podAnnotations:
+  environment: production
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/metrics"
+  vault.hashicorp.com/agent-inject: "true"
+
+# Affinity rules for production (spread across availability zones)
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - productcatalog
+        topologyKey: kubernetes.io/hostname
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+            - key: workload
+              operator: In
+              values:
+                - production
+
+# Tolerations for production nodes
+tolerations:
+  - key: "production"
+    operator: "Equal"
+    value: "true"
+    effect: "NoSchedule"
+
+# Network policies (strict)
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: productcatalog
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 27017  # MongoDB
+        - protocol: TCP
+          port: 443  # HTTPS
+        - protocol: TCP
+          port: 53  # DNS
+        - protocol: UDP
+          port: 53  # DNS
+
+# Service Monitor for Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Backup configuration
+backup:
+  enabled: true
+  schedule: "0 1 * * *"  # Daily at 1 AM
+  retention: 30  # days

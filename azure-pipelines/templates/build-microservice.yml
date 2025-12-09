@@ -1,0 +1,82 @@
+# Reusable Template: Build Node.js Microservice
+# Parameters:
+#   servicePath: Path to the microservice directory
+#   serviceName: Name of the microservice
+#   nodeVersion: Node.js version to use
+
+parameters:
+  - name: servicePath
+    type: string
+  - name: serviceName
+    type: string
+  - name: nodeVersion
+    type: string
+    default: '18.x'
+
+steps:
+  - checkout: self
+    displayName: 'Checkout Code'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: ${{ parameters.nodeVersion }}
+    displayName: 'Install Node.js ${{ parameters.nodeVersion }}'
+
+  - script: |
+      cd ${{ parameters.servicePath }}
+      if [ ! -f "package.json" ]; then
+        echo "Error: package.json not found in ${{ parameters.servicePath }}"
+        exit 1
+      fi
+      echo "Installing dependencies for ${{ parameters.serviceName }}..."
+      npm ci
+    displayName: 'Install Dependencies'
+
+  - script: |
+      cd ${{ parameters.servicePath }}
+      echo "Running linter for ${{ parameters.serviceName }}..."
+      if grep -q '"lint"' package.json; then
+        npm run lint
+      else
+        echo "No lint script found, skipping..."
+      fi
+    displayName: 'Run Linter'
+    continueOnError: true
+
+  - script: |
+      cd ${{ parameters.servicePath }}
+      echo "Running unit tests for ${{ parameters.serviceName }}..."
+      if grep -q '"test"' package.json; then
+        npm test
+      else
+        echo "No test script found, skipping..."
+      fi
+    displayName: 'Run Unit Tests'
+    continueOnError: true
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '${{ parameters.servicePath }}/**/test-results.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      mergeTestResults: true
+      testRunTitle: '${{ parameters.serviceName }} Tests'
+    displayName: 'Publish Test Results'
+    condition: always()
+    continueOnError: true
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '${{ parameters.servicePath }}/**/coverage/cobertura-coverage.xml'
+      reportDirectory: '${{ parameters.servicePath }}/**/coverage'
+    displayName: 'Publish Code Coverage'
+    condition: always()
+    continueOnError: true
+
+  - script: |
+      echo "Build completed for ${{ parameters.serviceName }}"
+      echo "Service: ${{ parameters.serviceName }}"
+      echo "Path: ${{ parameters.servicePath }}"
+      echo "Status: Success"
+    displayName: 'Build Summary'

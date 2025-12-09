@@ -1,0 +1,58 @@
+# Reusable Template: Package Helm Chart
+# Parameters:
+#   chartPath: Path to the Helm chart directory
+#   chartName: Name of the Helm chart
+
+parameters:
+  - name: chartPath
+    type: string
+  - name: chartName
+    type: string
+
+steps:
+  - checkout: self
+    displayName: 'Checkout Code'
+
+  - task: HelmInstaller@1
+    displayName: 'Install Helm'
+    inputs:
+      helmVersionToInstall: '3.12.0'
+
+  - script: |
+      echo "Validating Helm chart: ${{ parameters.chartName }}"
+      helm lint ${{ parameters.chartPath }}
+    displayName: 'Lint Helm Chart'
+
+  - script: |
+      echo "Packaging Helm chart: ${{ parameters.chartName }}"
+      helm package ${{ parameters.chartPath }} \
+        --destination $(Build.ArtifactStagingDirectory) \
+        --version $(Build.BuildNumber)
+      
+      # Generate chart metadata
+      cd $(Build.ArtifactStagingDirectory)
+      ls -lh *.tgz
+      sha256sum *.tgz >> checksums.txt
+    displayName: 'Package Helm Chart'
+
+  - script: |
+      echo "Testing Helm chart installation (dry-run)"
+      helm install ${{ parameters.chartName }}-test \
+        $(Build.ArtifactStagingDirectory)/${{ parameters.chartName }}-*.tgz \
+        --dry-run --debug
+    displayName: 'Test Helm Chart (Dry Run)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'helm-${{ parameters.chartName }}'
+      publishLocation: 'Container'
+    displayName: 'Publish Helm Chart Artifact'
+
+  - script: |
+      echo "Helm Package Summary"
+      echo "===================="
+      echo "Chart: ${{ parameters.chartName }}"
+      echo "Version: $(Build.BuildNumber)"
+      echo "Location: $(Build.ArtifactStagingDirectory)"
+    displayName: 'Package Summary'
