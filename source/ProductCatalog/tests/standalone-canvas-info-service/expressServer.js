@@ -48,6 +48,35 @@ class ExpressServer {
     this.app.use(express.json())
     this.app.use(express.text())
     this.app.use(express.urlencoded({ extended: false }))
+
+    // Fix for Kratos CSRF cookie persistence
+    // Ensure Set-Cookie headers have a Domain attribute to avoid host-only cookies which might not persist in some environments
+    this.app.use((req, res, next) => {
+        const oldSetHeader = res.setHeader;
+        res.setHeader = function(name, value) {
+            if (name && name.toLowerCase() === 'set-cookie') {
+                 let domain = req.hostname;
+                 // Avoid setting Domain for localhost as it can cause issues in some browsers
+                 if (domain !== 'localhost' && domain !== '127.0.0.1') {
+                     if (Array.isArray(value)) {
+                        value = value.map(v => {
+                            if (!v.toLowerCase().includes('domain=')) {
+                                return v + '; Domain=' + domain;
+                            }
+                            return v;
+                        });
+                     } else if (typeof value === 'string') {
+                        if (!value.toLowerCase().includes('domain=')) {
+                            value = value + '; Domain=' + domain;
+                        }
+                     }
+                 }
+            }
+            return oldSetHeader.call(this, name, value);
+        }
+        next();
+    });
+
     this.app.use(cookieParser())
     
     //Simple test to see that the server is up and responding
