@@ -36,6 +36,27 @@ Implement a dedicated SaaS solution designed for IT Asset Management (ITAM) and 
 *   Significant licensing costs.
 *   Implementation time can be lengthy.
 
+### Option 2b: Open Source Alternatives (Self-Hosted)
+For organizations that prefer self-hosted, open-source solutions to avoid SaaS licensing fees, there are robust options available.
+
+*   **Cloud Inventory & Data Ingestion: CloudQuery**
+    *   **What it does:** High-performance ELT (Extract, Load, Transform) framework. It connects to your Azure and M365 accounts, fetches all configuration and asset data, and loads it into a PostgreSQL database.
+    *   **Best for:** Creating a raw "source of truth" database that you can query with SQL.
+    *   **Visualization:** Pair with **Grafana** or **Apache Superset** to build dashboards on top of the Postgres data.
+
+*   **Asset Management UI: Snipe-IT**
+    *   **What it does:** The industry standard open-source IT Asset Management system. Great for tracking lifecycle (who has what license, purchase dates, expiration).
+    *   **Integration:** Requires "glue code" or scripts to sync data from Azure/M365 into Snipe-IT via its API. It does not have native "auto-discovery" for cloud resources out of the box.
+
+*   **Cloud Cost (FinOps): OpenCost**
+    *   **What it does:** Originally for Kubernetes, but expanding to support external cloud costs.
+    *   **Alternative:** **Koku** (upstream for Red Hat Cost Management) handles Azure cost data well.
+
+**Proposed Open Source Stack:**
+1.  **Ingest:** Run **CloudQuery** nightly to dump Azure & M365 state into PostgreSQL.
+2.  **Visualise:** Use **Grafana** for cost/usage dashboards.
+3.  **Manage:** Use scripts to sync key assets (e.g., expensive M365 licenses) from Postgres into **Snipe-IT** for manual assignment and lifecycle tracking.
+
 ### Option 3: Custom Data Aggregation (Build / Low-Code)
 Build a lightweight middleware or low-code solution to aggregate data into a central repository.
 
