@@ -1,0 +1,145 @@
+id,project,input_url,github_repo,repo_url,match_source,match_confidence,stars,forks,latest_commit_main_branch_utc,contributor_diversity
+7579,Nirmata (Kyverno),https://nirmata.com/kyverno-oss/,kyverno/kyverno,https://github.com/kyverno/kyverno,manual,0.99,7409,1236,2026-02-19T08:57:32Z,Significant external contributor community
+5572,Victoria Metrics,https://victoriametrics.com/,VictoriaMetrics/VictoriaMetrics,https://github.com/VictoriaMetrics/VictoriaMetrics,manual,0.99,16339,1572,2026-02-18T20:45:28Z,"Mostly core-team maintained, some external contributions"
+7213,erxes,www.erxes.io,erxes/erxes,https://github.com/erxes/erxes,domain_org_match,0.95,3900,1229,2026-02-16T14:57:36Z,Significant external contributor community
+7230,OpsMill (Infrahub),www.opsmill.com,opsmill/infrahub,https://github.com/opsmill/infrahub,manual,0.99,423,43,2026-02-18T19:18:08Z,Significant external contributor community
+4266,"LINBIT (Linforge, DRBD)",https://linbit.com/,LINBIT/linstor-server,https://github.com/LINBIT/linstor-server,manual,0.99,1196,91,2026-02-13T10:39:01Z,Mixed maintainership with external contributors
+5564,Talos Linux (Sidero Labs),https://www.siderolabs.com/,siderolabs/talos,https://github.com/siderolabs/talos,manual,0.99,9898,783,2026-02-18T14:47:23Z,Mixed maintainership with external contributors
+7242,Turso,www.turso.tech,tursodatabase/libsql,https://github.com/tursodatabase/libsql,manual,0.99,16381,464,2025-12-26T07:01:19Z,Significant external contributor community (multiple companies visible)
+7246,Zitadel,zitadel.com,zitadel/zitadel,https://github.com/zitadel/zitadel,manual,0.99,13006,943,2026-02-19T09:28:48Z,Significant external contributor community
+7536,Terramate,https://terramate.io/,terramate-io/terramate,https://github.com/terramate-io/terramate,manual,0.99,3527,113,2026-02-17T14:05:41Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+6163,Baserow,www.baserow.io,bram2w/baserow,https://github.com/baserow/baserow,manual,0.99,4177,516,2026-02-18T23:32:53Z,Mixed maintainership with external contributors (multiple companies visible)
+6202,Frappe (ERPNext),www.frappe.io,frappe/erpnext,https://github.com/frappe/erpnext,manual,0.99,31819,10476,2026-02-19T08:31:39Z,Significant external contributor community (multiple companies visible)
+6040,NextCloud,www.nextcloud.com,nextcloud/server,https://github.com/nextcloud/server,manual,0.99,34125,4725,2026-02-19T08:17:45Z,Significant external contributor community (multiple companies visible)
+6080,Karate Labs,www.karatelabs.io,karatelabs/karate,https://github.com/karatelabs/karate,manual,0.99,8787,2013,2025-12-05T11:12:19Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+4935,Meticulous,https://www.meticulous.ai,meticulous/state-decoded-ui-2012,https://github.com/meticulous/state-decoded-ui-2012,domain_org_match,0.9,6,0,2013-09-09T22:08:21Z,Primarily maintained by core/org team
+7182,Weld,weld.app,weld/weld-testing,https://github.com/weld/weld-testing,domain_org_match,0.9,112,33,2026-02-01T04:22:29Z,"Mixed maintainership with external contributors (notable affiliations: IBM, Red Hat, Inc.)"
+5953,ThingsBoard,thingsboard.io,thingsboard/thingsboard,https://github.com/thingsboard/thingsboard,manual,0.99,21145,6138,2026-02-17T13:25:28Z,Significant external contributor community
+7542,Civo,https://www.civo.com/,civo/civo,https://github.com/civo/civo,domain_org_match,0.95,0,1,2020-09-28T10:48:34Z,Primarily maintained by core/org team
+5673,Red5,www.red5.net,Red5/red5-server,https://github.com/Red5/red5-server,domain_org_match,0.95,3425,1012,2026-02-18T17:25:51Z,"Mostly core-team maintained, some external contributions"
+6091,Portainer.io,www.portainer.io,portainer/portainer,https://github.com/portainer/portainer,manual,0.99,36597,2775,2026-02-17T08:38:18Z,Significant external contributor community (multiple companies visible)
+6067,Shipyard,www.shipyard.build,shipyard/shipyard-cli,https://github.com/shipyard/shipyard-cli,domain_org_match,0.9,9,4,2025-10-16T13:22:47Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+4564,Sagetap,sagetap.io,Sagetap/sagetap-backend-test,https://github.com/Sagetap/sagetap-backend-test,domain_org_match,0.9,0,0,2023-06-01T18:51:51Z,"Mostly core-team maintained, some external contributions"
+5615,Patchstack,www.patchstack.com,patchstack/wpcli-patchstack,https://github.com/patchstack/wpcli-patchstack,domain_org_match,0.95,17,6,2022-03-20T14:54:04Z,"Mostly core-team maintained, some external contributions"
+4107,Giant Swarm,giantswarm.io,giantswarm/happa,https://github.com/giantswarm/happa,domain_org_match,0.9,22,4,2026-02-11T15:44:20Z,Significant external contributor community (multiple companies visible)
+5649,Middleware,www.middleware.io,middlewarehq/middleware,https://github.com/middlewarehq/middleware,domain_org_match,0.95,1544,159,2026-01-14T12:41:34Z,Significant external contributor community (multiple companies visible)
+7208,Daytona,www.daytona.io,daytonaio/daytona,https://github.com/daytonaio/daytona,domain_org_match,0.95,58392,5038,2026-02-18T11:21:17Z,Mixed maintainership with external contributors
+7210,Directus,directus.io,directus/directus,https://github.com/directus/directus,manual,0.99,34247,4569,2026-02-18T19:16:05Z,"Mostly core-team maintained, some external contributions"
+7216,Gatling,www.gatling.io,gatling/gatling,https://github.com/gatling/gatling,manual,0.99,6864,1213,2026-02-17T13:02:27Z,"Mostly core-team maintained, some external contributions (notable affiliations: DataDog)"
+7229,OpenReplay,www.openreplay.com,openreplay/openreplay,https://github.com/openreplay/openreplay,manual,0.99,11741,686,2026-02-19T08:57:02Z,Significant external contributor community (multiple companies visible)
+7179,Reflex (Pynecone),reflex.dev,reflex-dev/reflex,https://github.com/reflex-dev/reflex,manual,0.99,28128,1690,2026-02-13T21:15:13Z,Significant external contributor community (multiple companies visible)
+4977,Facets.Cloud,https://www.facets.cloud,Facets-cloud/facets.cloud,https://github.com/Facets-cloud/facets.cloud,search_affinity,0.84,3,0,2024-04-30T13:02:45Z,Primarily maintained by core/org team
+6035,Countly,www.countly.com,Countly/countly-server,https://github.com/Countly/countly-server,domain_org_match,0.95,5825,982,2026-02-17T13:23:28Z,Mixed maintainership with external contributors
+4985,SigNoz,https://signoz.io,SigNoz/signoz,https://github.com/SigNoz/signoz,manual,0.99,25790,1967,2026-02-19T08:20:41Z,Significant external contributor community
+7145,Mavvrik,www.mavvrik.ai,Mavvrikk/mavvrikk.github.io,https://github.com/Mavvrikk/mavvrikk.github.io,search_affinity,0.84,0,0,2024-09-13T13:50:47Z,Primarily maintained by core/org team
+6788,Elba,www.elba.security,elba/idris-elba-interface,https://github.com/elba/idris-elba-interface,domain_org_match,0.9,2,0,2019-04-19T14:31:33Z,Primarily maintained by core/org team
+6104,ComplianceCow,www.compliancecow.com,ComplianceCow/compliancecow-data-library,https://github.com/ComplianceCow/compliancecow-data-library,domain_org_match,0.95,2,4,2022-11-08T06:19:45Z,"Mostly core-team maintained, some external contributions"
+7241,Traefik Labs (Containous),www.traefik.io,traefik/traefik,https://github.com/traefik/traefik,manual,0.99,61758,5834,2026-02-17T11:30:07Z,Significant external contributor community (multiple companies visible)
+7460,Qovery,https://www.qovery.com,Qovery/engine,https://github.com/Qovery/engine,manual,0.99,2429,81,2026-02-18T15:23:07Z,Significant external contributor community
+7170,Acsense,www.acsense.com,,,unresolved,0.0,,,,No clear OSS repo found
+4621,SST (Anomaly),sst.dev,sst/sst,https://github.com/anomalyco/sst,manual,0.99,25501,2023,2026-02-19T09:14:15Z,Mixed maintainership with external contributors (multiple companies visible)
+5650,Xygeni,www.xygeni.io,xygeni/xygeni,https://github.com/xygeni/xygeni,domain_org_match,0.95,0,0,2026-02-13T13:05:33Z,Primarily maintained by core/org team
+7226,Novu,www.novu.co,novuhq/novu,https://github.com/novuhq/novu,manual,0.99,38590,4216,2026-02-17T06:05:12Z,Significant external contributor community (multiple companies visible)
+5597,Crafting,www.crafting.dev,,,unresolved,0.0,,,,No clear OSS repo found
+5651,Nullplatform,www.nullplatform.com,nullplatform/terraform-provider-nullplatform,https://github.com/nullplatform/terraform-provider-nullplatform,domain_org_match,0.9,2,3,2026-02-09T20:18:19Z,Mixed maintainership with external contributors
+6108,Trino (PrestoSQL),https://trino.io/,trinodb/trino,https://github.com/trinodb/trino,manual,0.99,12569,3491,2026-02-19T05:43:29Z,Significant external contributor community (multiple companies visible)
+7247,Semaphore,https://semaphore.io/,semaphoreio/semaphore,https://github.com/semaphoreio/semaphore,domain_org_match,0.95,1462,74,2026-02-18T13:22:15Z,Significant external contributor community (multiple companies visible)
+7211,dltHub,www.dlthub.com,dlt-hub/dlt,https://github.com/dlt-hub/dlt,manual,0.99,4928,452,2026-02-18T16:51:20Z,Mixed maintainership with external contributors
+7207,Cycloid,www.cycloid.io,cycloidio/cycloid-cli,https://github.com/cycloidio/cycloid-cli,domain_org_match,0.9,17,1,2026-02-05T20:54:21Z,Mixed maintainership with external contributors (multiple companies visible)
+7228,OpenObserve,openobserve.ai,openobserve/openobserve,https://github.com/openobserve/openobserve,manual,0.99,17931,733,2026-02-19T08:34:33Z,Significant external contributor community
+3756,Akto,www.akto.io,akto-api-security/akto,https://github.com/akto-api-security/akto,manual,0.99,1448,273,2026-02-19T09:21:04Z,Significant external contributor community (multiple companies visible)
+5599,Tilores,www.tilores.io,tilotech/python-tilores-sdk,https://github.com/tilotech/python-tilores-sdk,search_affinity,0.84,3,0,2024-11-21T12:43:58Z,Primarily maintained by core/org team
+5643,Cavelo,www.cavelo.com,Cavelo44000/Cavelo,https://github.com/Cavelo44000/Cavelo,search_affinity,0.84,0,0,2025-06-20T17:56:01Z,Primarily maintained by core/org team
+5659,GoodAccess,www.goodaccess.com,,,unresolved,0.0,,,,No clear OSS repo found
+7215,Flagsmith,www.flagsmith.com,Flagsmith/flagsmith,https://github.com/Flagsmith/flagsmith,manual,0.99,6219,467,2026-02-19T08:22:15Z,Significant external contributor community
+7245,WunderGraph,www.wundergraph.com,wundergraph/wundergraph,,manual,0.99,,,,Repo lookup failed
+5492,Lleverage,www.lleverage.ai,lleverage-ai/lleverage-active-monitoring,https://github.com/lleverage-ai/lleverage-active-monitoring,search_affinity,0.84,0,0,2025-11-04T15:42:33Z,Primarily maintained by core/org team
+5680,PlayerZero,www.playerzero.ai,,,unresolved,0.0,,,,No clear OSS repo found
+6780,CodeAnt AI,www.codeant.ai,CodeAnt-AI/CodeAnt-AI,https://github.com/CodeAnt-AI/CodeAnt-AI,search_affinity,0.84,6,3,2024-01-19T09:54:20Z,Primarily maintained by core/org team
+7180,Baserock.ai,www.baserock.ai,,,unresolved,0.0,,,,No clear OSS repo found
+7244,Windmill,www.windmill.dev,windmill-labs/windmill,https://github.com/windmill-labs/windmill,manual,0.99,15838,882,2026-02-19T09:37:11Z,"Mostly core-team maintained, some external contributions"
+7235,StepSecurity,www.stepsecurity.io,step-security/harden-runner,https://github.com/step-security/harden-runner,manual,0.99,964,83,2026-02-07T01:26:07Z,"Mostly core-team maintained, some external contributions"
+5123,simplyblock,https://www.simplyblock.io/,simplyblock-io/simplyblock,,manual,0.99,,,,Repo lookup failed
+5656,Cloud Storage Security (cloudstoragesec),cloudstoragesecurity.com,,,unresolved,0.0,,,,No clear OSS repo found
+7384,Encore (Leap),https://encore.dev/,encoredev/encore,https://github.com/encoredev/encore,manual,0.99,11434,558,2026-02-18T09:23:09Z,Mixed maintainership with external contributors (notable affiliations: Spotify)
+5600,APIContext,www.apicontext.com,,,unresolved,0.0,,,,No clear OSS repo found
+6007,Gruntwork,www.gruntwork.io,gruntwork-io/terragrunt,https://github.com/gruntwork-io/terragrunt,manual,0.99,9310,1139,2026-02-18T19:38:53Z,Significant external contributor community
+6100,Golioth,www.golioth.io,golioth/golioth,,manual,0.99,,,,Repo lookup failed
+7197,Ambar,www.ambar.cloud,,,unresolved,0.0,,,,No clear OSS repo found
+7219,LangDB,langdb.ai,langdb/jupyterlite-langdb,https://github.com/langdb/jupyterlite-langdb,domain_org_match,0.9,1,0,2024-09-19T07:07:24Z,"Mostly core-team maintained, some external contributions"
+7238,Syntasso (Kratix),www.syntasso.io,syntasso/kratix,https://github.com/syntasso/kratix,manual,0.99,724,49,2026-02-18T17:09:54Z,Significant external contributor community
+7240,NativeLink (Trace Machina),https://www.nativelink.com/,TraceMachina/nativelink,https://github.com/TraceMachina/nativelink,manual,0.99,1486,206,2026-02-16T20:25:46Z,Significant external contributor community (multiple companies visible)
+7243,Webiny,www.webiny.com,webiny/webiny-js,https://github.com/webiny/webiny-js,manual,0.99,7937,657,2026-02-19T07:22:37Z,Mixed maintainership with external contributors (multiple companies visible)
+7503,Roadie,www.roadie.io,RoadieHQ/roadie-backstage-plugins,https://github.com/RoadieHQ/roadie-backstage-plugins,manual,0.99,335,469,2026-02-12T08:51:06Z,Significant external contributor community (multiple companies visible)
+6836,Factor House,www.factorhouse.io,factorhouse/factorhouse-local,https://github.com/factorhouse/factorhouse-local,domain_org_match,0.95,51,6,2026-01-06T02:49:47Z,Primarily maintained by core/org team
+7150,Arcjet,www.arcjet.com,arcjet/arcjet-js,https://github.com/arcjet/arcjet-js,domain_org_match,0.9,647,29,2026-02-17T00:32:14Z,"Mostly core-team maintained, some external contributions"
+7198,Amplication,www.amplication.com,amplication/amplication,https://github.com/amplication/amplication,manual,0.99,16002,1554,2025-10-11T08:16:54Z,Significant external contributor community (multiple companies visible)
+7217,Hiop,www.hiop.io,,,unresolved,0.0,,,,No clear OSS repo found
+7236,Superstream,superstream.ai,gpahal/superstream,https://github.com/gpahal/superstream,search_affinity,0.84,3,0,2024-07-18T17:59:58Z,Primarily maintained by core/org team
+3781,Apidog (Anakin AI),apidog.com,apidog/apidog,,manual,0.99,,,,Repo lookup failed
+4066,FalkorDB,FalkorDB.com,FalkorDB/FalkorDB,https://github.com/FalkorDB/FalkorDB,manual,0.99,3431,267,2026-02-18T08:15:31Z,Significant external contributor community
+5528,Polar Signals,www.polarsignals.com,polarsignals/parca,,manual,0.99,,,,Repo lookup failed
+5612,Antimetal,www.antimetal.com,antimetal/terraform-aws-antimetal,https://github.com/antimetal/terraform-aws-antimetal,domain_org_match,0.9,3,0,2023-08-08T16:48:48Z,Primarily maintained by core/org team (notable affiliations: Antimetal)
+6842,Guepard,www.guepard.run,Guepard-Corp/Guepard,https://github.com/Guepard-Corp/Guepard,search_affinity,0.84,5,0,2025-03-22T19:23:02Z,Primarily maintained by core/org team
+7205,ControlMonkey,www.controlmonkey.io,,,unresolved,0.0,,,,No clear OSS repo found
+5630,Radium,www.radium.cloud,,,unresolved,0.0,,,,No clear OSS repo found
+5689,Lumeus,www.lumeus.ai,,,unresolved,0.0,,,,No clear OSS repo found
+7146,Plural,www.plural.sh,pluralai/open-plural,https://github.com/pluralai/open-plural,domain_org_match,0.95,0,0,2020-01-16T16:27:52Z,Primarily maintained by core/org team
+7174,Early AI,www.startearly.ai,,,unresolved,0.0,,,,No clear OSS repo found
+7395,digger.dev,https://digger.dev/,diggerhq/digger,https://github.com/diggerhq/digger,manual,0.99,4855,573,2026-02-07T16:15:17Z,Significant external contributor community
+6169,Comp AI,www.trycomp.ai,trycompai/comp,https://github.com/trycompai/comp,manual,0.99,1385,250,2026-02-19T04:39:55Z,Significant external contributor community (multiple companies visible)
+7183,Conexus,www.conexus.com,,,no_repo,0.0,,,,No clear OSS repo found
+7499,ConfigCat,configcat.com,configcat/common,,manual,0.99,,,,Repo lookup failed
+7596,Lunar.dev,www.lunar.dev,TheLunarCompany/lunar,https://github.com/TheLunarCompany/lunar,search_affinity,0.84,398,24,2026-02-18T14:22:43Z,"Mostly core-team maintained, some external contributions"
+7604,Zuplo,https://zuplo.com/,zuplo/zuplo,https://github.com/zuplo/zuplo,domain_org_match,0.95,38,6,2026-02-17T13:28:50Z,Mixed maintainership with external contributors (multiple companies visible)
+4439,Overmind,overmind.tech,,,no_repo,0.0,,,,No clear OSS repo found
+4520,quiltt,https://www.quiltt.io/,,,no_repo,0.0,,,,No clear OSS repo found
+4642,SuperTokens,https://supertokens.com,supertokens/supertokens-core,https://github.com/supertokens/supertokens-core,manual,0.99,14921,639,2026-02-13T16:19:36Z,Mixed maintainership with external contributors (multiple companies visible)
+5679,Thoras AI,thoras.ai,,,no_repo,0.0,,,,No clear OSS repo found
+5687,OpsCanvas,www.opscanvas.com,,,no_repo,0.0,,,,No clear OSS repo found
+7165,Serverpod,www.serverpod.dev,serverpod/serverpod,https://github.com/serverpod/serverpod,manual,0.99,3095,332,2026-02-18T19:58:10Z,Mixed maintainership with external contributors
+7231,Pull Systems,www.pull.systems,,,no_repo,0.0,,,,No clear OSS repo found
+7232,Qencode,www.cloud.qencode.com,,,unresolved,0.0,,,,No clear OSS repo found
+3803,Aspect Build (Bazel),https://aspect.build/,aspect-build/aspect-cli,https://github.com/aspect-build/aspect-cli,manual,0.99,148,39,2026-02-16T04:21:49Z,Primarily maintained by core/org team
+4213,Juice Labs,juicelabs.co,Juice-Labs/Juice-Labs,https://github.com/Juice-Labs/Juice-Labs,manual,0.99,631,62,2025-05-01T01:30:32Z,"Mostly core-team maintained, some external contributions"
+5602,Cloudoor,www.cloudoor.com,CLOUDoort/CLOUDoort,https://github.com/CLOUDoort/CLOUDoort,search_affinity,0.84,0,0,2023-02-28T15:31:57Z,Primarily maintained by core/org team
+5618,Callback Technologies,www.callback.com,,,unresolved,0.0,,,,No clear OSS repo found
+5642,Packmind (ProMyze),www.packmind.com,PackmindHub/packmind,https://github.com/PackmindHub/packmind,search_affinity,0.84,197,7,2026-02-19T09:36:20Z,Mixed maintainership with external contributors
+5681,TestSprite,www.testsprite.com,TestSprite/Docs,https://github.com/TestSprite/Docs,domain_org_match,0.95,24,6,2026-02-19T08:08:42Z,"Mostly core-team maintained, some external contributions"
+6022,Typesense,typesense.org,typesense/typesense,https://github.com/typesense/typesense,manual,0.99,25240,859,2026-02-19T06:58:37Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+6094,Marker.io,www.marker.io,,,unresolved,0.0,,,,No clear OSS repo found
+7214,Expanso,www.expanso.io,,,unresolved,0.0,,,,No clear OSS repo found
+4543,Requestly,https://requestly.com/,requestly/requestly,https://github.com/requestly/requestly,manual,0.99,6328,591,2026-02-19T04:51:27Z,Significant external contributor community (multiple companies visible)
+5980,Wasp,https://wasp.sh/,wasp-lang/wasp,https://github.com/wasp-lang/wasp,manual,0.99,18139,1425,2026-02-19T09:12:39Z,Significant external contributor community (multiple companies visible)
+6089,Codiac,codiac.io,,,no_repo,0.0,,,,No clear OSS repo found
+7202,Cerbos,www.cerbos.dev,cerbos/cerbos,https://github.com/cerbos/cerbos,manual,0.99,4223,171,2026-02-16T07:56:20Z,Significant external contributor community
+7640,Bruin,https://getbruin.com/,bruin-data/bruin,https://github.com/bruin-data/bruin,manual,0.99,1373,57,2026-02-17T16:41:35Z,Significant external contributor community
+5515,GlassFlow,www.glassflow.dev,glassflow/clickhouse-etl,https://github.com/glassflow/clickhouse-etl,manual,0.99,413,25,2026-02-18T16:00:54Z,Mixed maintainership with external contributors
+6070,Kill Bill,www.killbill.io,killbill/killbill,https://github.com/killbill/killbill,manual,0.99,5339,897,2025-11-25T07:51:04Z,Mixed maintainership with external contributors (multiple companies visible)
+6841,Opsima,www.opsima.ai,,,unresolved,0.0,,,,No clear OSS repo found
+4061,Excalidraw,excalidraw.com,excalidraw/excalidraw,https://github.com/excalidraw/excalidraw,manual,0.99,117042,12574,2026-02-17T13:10:05Z,Significant external contributor community (multiple companies visible)
+4470,plakar,plakar.io,plakar/kapsule,,manual,0.99,,,,Repo lookup failed
+5655,Metify,www.metify.io,,,no_repo,0.0,,,,No clear OSS repo found
+6068,Trapezoid,www.trapezoid.com,,,no_repo,0.0,,,,No clear OSS repo found
+6088,Authentik Security,goauthentik.io,goauthentik/authentik,https://github.com/goauthentik/authentik,manual,0.99,20191,1479,2026-02-18T21:40:40Z,Mixed maintainership with external contributors
+6815,Pipekit,www.pipekit.io,pipekit/pipekit-go,https://github.com/pipekit/pipekit-go,domain_org_match,0.95,0,0,2022-01-13T17:21:24Z,Primarily maintained by core/org team
+7223,Marimo,www.marimo.io,marimo-team/marimo,https://github.com/marimo-team/marimo,manual,0.99,19203,923,2026-02-19T04:17:43Z,Mixed maintainership with external contributors (multiple companies visible)
+7353,StackBooster,https://stackbooster.io/,stackbooster/xmetaform,https://github.com/stackbooster/xmetaform,domain_org_match,0.9,0,0,2024-08-21T15:14:45Z,Unknown (no contributor data)
+7374,Hoppscotch,https://hoppscotch.com,hoppscotch/hoppscotch,https://github.com/hoppscotch/hoppscotch,manual,0.99,77882,5586,2026-02-05T10:09:47Z,Mixed maintainership with external contributors
+7394,Unkey,https://www.unkey.com/,unkeyed/unkey,https://github.com/unkeyed/unkey,search_affinity,0.84,5160,600,2026-02-19T06:42:17Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+7625,NetBird,https://netbird.io/,netbirdio/netbird,https://github.com/netbirdio/netbird,manual,0.99,22703,1110,2026-02-19T07:14:11Z,Significant external contributor community (multiple companies visible)
+3896,Cloud 66,cloud66.com,cloud66-oss/habitus,https://github.com/cloud66-oss/habitus,manual,0.99,1391,82,2020-02-05T17:10:28Z,"Mostly core-team maintained, some external contributions (multiple companies visible)"
+4288,MaestroDev,https://maestro.dev/,MaestroHQ/maestroapp,https://github.com/MaestroHQ/maestroapp,domain_org_match,0.95,1,0,2016-11-02T04:19:46Z,Primarily maintained by core/org team
+4669,TeleportHQ,https://teleporthq.io/,teleporthq/teleport-code-generators,https://github.com/teleporthq/teleport-code-generators,domain_org_match,0.9,1108,185,2026-02-13T13:16:57Z,Mixed maintainership with external contributors (multiple companies visible)
+5664,Citeel,www.citeel.com,,,unresolved,0.0,,,,No clear OSS repo found
+7204,Continue,www.continue.dev,continuedev/continue,https://github.com/continuedev/continue,manual,0.99,31444,4169,2026-02-18T22:20:46Z,Mixed maintainership with external contributors (multiple companies visible)
+7626,Casdoor (Casbin),https://casdoor.org/,casdoor/casdoor,https://github.com/casdoor/casdoor,manual,0.99,13023,1567,2026-02-18T18:13:29Z,"Mostly core-team maintained, some external contributions"
+6085,Taubyte,taubyte.com,taubyte/tau,https://github.com/taubyte/tau,domain_org_match,0.95,4972,184,2026-02-15T07:23:30Z,"Mostly core-team maintained, some external contributions"
+4118,GO Feature Flag // Kuber //,https://gofeatureflag.org/,thomaspoignant/go-feature-flag,https://github.com/thomaspoignant/go-feature-flag,manual,0.99,1939,200,2026-02-17T01:08:23Z,"Mostly core-team maintained, some external contributions"
+4248,KushoAI,https://kusho.ai/,kusho-co/kusho-test-runner,https://github.com/kusho-co/kusho-test-runner,search_affinity,0.84,0,0,2024-11-19T06:27:38Z,Primarily maintained by core/org team
+4649,Sylabs (pivot to QLAD),https://sylabs.io/,sylabs/singularity,https://github.com/sylabs/singularity,domain_org_match,0.9,933,112,2026-02-13T12:50:39Z,Significant external contributor community (multiple companies visible)
+5962,Kedify (KEDA),https://kedify.io/,kedacore/keda,https://github.com/kedacore/keda,manual,0.99,9918,1319,2026-02-18T13:02:49Z,Significant external contributor community (notable affiliations: Microsoft)
+5995,AxisNow,https://www.axisnow.io/,,,unresolved,0.0,,,,No clear OSS repo found
+7135,LatenceTech,www.latencetech.com,,,no_repo,0.0,,,,No clear OSS repo found
+7249,Kortix,https://www.kortix.com,,,no_repo,0.0,,,,No clear OSS repo found
+6028,Zyntra,zyntra.app,,,unresolved,0.0,,,,No clear OSS repo found
