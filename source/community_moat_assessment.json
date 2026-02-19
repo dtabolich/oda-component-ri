@@ -692,14 +692,14 @@
     "id": "7245",
     "project": "WunderGraph",
     "input_url": "www.wundergraph.com",
-    "github_repo": "wundergraph/wundergraph",
-    "repo_url": "",
+    "github_repo": "wundergraph/cosmo",
+    "repo_url": "https://github.com/wundergraph/cosmo",
     "match_source": "manual",
     "match_confidence": "0.99",
-    "stars": "",
-    "forks": "",
-    "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "stars": "1166",
+    "forks": "210",
+    "latest_commit_main_branch_utc": "2026-02-19T00:35:35Z",
+    "contributor_diversity": "Mixed maintainership with external contributors (multiple companies visible)"
   },
   {
     "id": "5492",
@@ -783,14 +783,14 @@
     "id": "5123",
     "project": "simplyblock",
     "input_url": "https://www.simplyblock.io/",
-    "github_repo": "simplyblock-io/simplyblock",
-    "repo_url": "",
+    "github_repo": "simplyblock/vela",
+    "repo_url": "https://github.com/simplyblock/vela",
     "match_source": "manual",
     "match_confidence": "0.99",
-    "stars": "",
-    "forks": "",
-    "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "stars": "116",
+    "forks": "4",
+    "latest_commit_main_branch_utc": "2026-02-18T11:33:34Z",
+    "contributor_diversity": "Significant external contributor community"
   },
   {
     "id": "5656",
@@ -848,14 +848,14 @@
     "id": "6100",
     "project": "Golioth",
     "input_url": "www.golioth.io",
-    "github_repo": "golioth/golioth",
-    "repo_url": "",
+    "github_repo": "golioth/golioth-firmware-sdk",
+    "repo_url": "https://github.com/golioth/golioth-firmware-sdk",
     "match_source": "manual",
     "match_confidence": "0.99",
-    "stars": "",
-    "forks": "",
-    "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "stars": "107",
+    "forks": "22",
+    "latest_commit_main_branch_utc": "2026-01-15T14:42:54Z",
+    "contributor_diversity": "Significant external contributor community"
   },
   {
     "id": "7197",
@@ -1004,14 +1004,14 @@
     "id": "3781",
     "project": "Apidog (Anakin AI)",
     "input_url": "apidog.com",
-    "github_repo": "apidog/apidog",
+    "github_repo": "",
     "repo_url": "",
-    "match_source": "manual",
-    "match_confidence": "0.99",
+    "match_source": "unresolved",
+    "match_confidence": "0.0",
     "stars": "",
     "forks": "",
     "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "contributor_diversity": "No clear OSS repo found"
   },
   {
     "id": "4066",
@@ -1030,14 +1030,14 @@
     "id": "5528",
     "project": "Polar Signals",
     "input_url": "www.polarsignals.com",
-    "github_repo": "polarsignals/parca",
-    "repo_url": "",
+    "github_repo": "parca-dev/parca",
+    "repo_url": "https://github.com/parca-dev/parca",
     "match_source": "manual",
     "match_confidence": "0.99",
-    "stars": "",
-    "forks": "",
-    "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "stars": "4782",
+    "forks": "244",
+    "latest_commit_main_branch_utc": "2026-02-18T17:35:25Z",
+    "contributor_diversity": "Mixed maintainership with external contributors (notable affiliations: DataDog)"
   },
   {
     "id": "5612",
@@ -1173,14 +1173,14 @@
     "id": "7499",
     "project": "ConfigCat",
     "input_url": "configcat.com",
-    "github_repo": "configcat/common",
-    "repo_url": "",
+    "github_repo": "configcat/js-sdk",
+    "repo_url": "https://github.com/configcat/js-sdk",
     "match_source": "manual",
     "match_confidence": "0.99",
-    "stars": "",
-    "forks": "",
-    "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "stars": "34",
+    "forks": "9",
+    "latest_commit_main_branch_utc": "2026-02-03T15:42:58Z",
+    "contributor_diversity": "Mixed maintainership with external contributors"
   },
   {
     "id": "7596",
@@ -1550,14 +1550,14 @@
     "id": "4470",
     "project": "plakar",
     "input_url": "plakar.io",
-    "github_repo": "plakar/kapsule",
+    "github_repo": "",
     "repo_url": "",
-    "match_source": "manual",
-    "match_confidence": "0.99",
+    "match_source": "unresolved",
+    "match_confidence": "0.0",
     "stars": "",
     "forks": "",
     "latest_commit_main_branch_utc": "",
-    "contributor_diversity": "Repo lookup failed"
+    "contributor_diversity": "No clear OSS repo found"
   },
   {
     "id": "5655",

@@ -52,19 +52,19 @@ id,project,input_url,github_repo,repo_url,match_source,match_confidence,stars,fo
 5643,Cavelo,www.cavelo.com,Cavelo44000/Cavelo,https://github.com/Cavelo44000/Cavelo,search_affinity,0.84,0,0,2025-06-20T17:56:01Z,Primarily maintained by core/org team
 5659,GoodAccess,www.goodaccess.com,,,unresolved,0.0,,,,No clear OSS repo found
 7215,Flagsmith,www.flagsmith.com,Flagsmith/flagsmith,https://github.com/Flagsmith/flagsmith,manual,0.99,6219,467,2026-02-19T08:22:15Z,Significant external contributor community
-7245,WunderGraph,www.wundergraph.com,wundergraph/wundergraph,,manual,0.99,,,,Repo lookup failed
+7245,WunderGraph,www.wundergraph.com,wundergraph/cosmo,https://github.com/wundergraph/cosmo,manual,0.99,1166,210,2026-02-19T00:35:35Z,Mixed maintainership with external contributors (multiple companies visible)
 5492,Lleverage,www.lleverage.ai,lleverage-ai/lleverage-active-monitoring,https://github.com/lleverage-ai/lleverage-active-monitoring,search_affinity,0.84,0,0,2025-11-04T15:42:33Z,Primarily maintained by core/org team
 5680,PlayerZero,www.playerzero.ai,,,unresolved,0.0,,,,No clear OSS repo found
 6780,CodeAnt AI,www.codeant.ai,CodeAnt-AI/CodeAnt-AI,https://github.com/CodeAnt-AI/CodeAnt-AI,search_affinity,0.84,6,3,2024-01-19T09:54:20Z,Primarily maintained by core/org team
 7180,Baserock.ai,www.baserock.ai,,,unresolved,0.0,,,,No clear OSS repo found
 7244,Windmill,www.windmill.dev,windmill-labs/windmill,https://github.com/windmill-labs/windmill,manual,0.99,15838,882,2026-02-19T09:37:11Z,"Mostly core-team maintained, some external contributions"
 7235,StepSecurity,www.stepsecurity.io,step-security/harden-runner,https://github.com/step-security/harden-runner,manual,0.99,964,83,2026-02-07T01:26:07Z,"Mostly core-team maintained, some external contributions"
-5123,simplyblock,https://www.simplyblock.io/,simplyblock-io/simplyblock,,manual,0.99,,,,Repo lookup failed
+5123,simplyblock,https://www.simplyblock.io/,simplyblock/vela,https://github.com/simplyblock/vela,manual,0.99,116,4,2026-02-18T11:33:34Z,Significant external contributor community
 5656,Cloud Storage Security (cloudstoragesec),cloudstoragesecurity.com,,,unresolved,0.0,,,,No clear OSS repo found
 7384,Encore (Leap),https://encore.dev/,encoredev/encore,https://github.com/encoredev/encore,manual,0.99,11434,558,2026-02-18T09:23:09Z,Mixed maintainership with external contributors (notable affiliations: Spotify)
 5600,APIContext,www.apicontext.com,,,unresolved,0.0,,,,No clear OSS repo found
 6007,Gruntwork,www.gruntwork.io,gruntwork-io/terragrunt,https://github.com/gruntwork-io/terragrunt,manual,0.99,9310,1139,2026-02-18T19:38:53Z,Significant external contributor community
-6100,Golioth,www.golioth.io,golioth/golioth,,manual,0.99,,,,Repo lookup failed
+6100,Golioth,www.golioth.io,golioth/golioth-firmware-sdk,https://github.com/golioth/golioth-firmware-sdk,manual,0.99,107,22,2026-01-15T14:42:54Z,Significant external contributor community
 7197,Ambar,www.ambar.cloud,,,unresolved,0.0,,,,No clear OSS repo found
 7219,LangDB,langdb.ai,langdb/jupyterlite-langdb,https://github.com/langdb/jupyterlite-langdb,domain_org_match,0.9,1,0,2024-09-19T07:07:24Z,"Mostly core-team maintained, some external contributions"
 7238,Syntasso (Kratix),www.syntasso.io,syntasso/kratix,https://github.com/syntasso/kratix,manual,0.99,724,49,2026-02-18T17:09:54Z,Significant external contributor community
@@ -76,9 +76,9 @@ id,project,input_url,github_repo,repo_url,match_source,match_confidence,stars,fo
 7198,Amplication,www.amplication.com,amplication/amplication,https://github.com/amplication/amplication,manual,0.99,16002,1554,2025-10-11T08:16:54Z,Significant external contributor community (multiple companies visible)
 7217,Hiop,www.hiop.io,,,unresolved,0.0,,,,No clear OSS repo found
 7236,Superstream,superstream.ai,gpahal/superstream,https://github.com/gpahal/superstream,search_affinity,0.84,3,0,2024-07-18T17:59:58Z,Primarily maintained by core/org team
-3781,Apidog (Anakin AI),apidog.com,apidog/apidog,,manual,0.99,,,,Repo lookup failed
+3781,Apidog (Anakin AI),apidog.com,,,unresolved,0.0,,,,No clear OSS repo found
 4066,FalkorDB,FalkorDB.com,FalkorDB/FalkorDB,https://github.com/FalkorDB/FalkorDB,manual,0.99,3431,267,2026-02-18T08:15:31Z,Significant external contributor community
-5528,Polar Signals,www.polarsignals.com,polarsignals/parca,,manual,0.99,,,,Repo lookup failed
+5528,Polar Signals,www.polarsignals.com,parca-dev/parca,https://github.com/parca-dev/parca,manual,0.99,4782,244,2026-02-18T17:35:25Z,Mixed maintainership with external contributors (notable affiliations: DataDog)
 5612,Antimetal,www.antimetal.com,antimetal/terraform-aws-antimetal,https://github.com/antimetal/terraform-aws-antimetal,domain_org_match,0.9,3,0,2023-08-08T16:48:48Z,Primarily maintained by core/org team (notable affiliations: Antimetal)
 6842,Guepard,www.guepard.run,Guepard-Corp/Guepard,https://github.com/Guepard-Corp/Guepard,search_affinity,0.84,5,0,2025-03-22T19:23:02Z,Primarily maintained by core/org team
 7205,ControlMonkey,www.controlmonkey.io,,,unresolved,0.0,,,,No clear OSS repo found
@@ -89,7 +89,7 @@ id,project,input_url,github_repo,repo_url,match_source,match_confidence,stars,fo
 7395,digger.dev,https://digger.dev/,diggerhq/digger,https://github.com/diggerhq/digger,manual,0.99,4855,573,2026-02-07T16:15:17Z,Significant external contributor community
 6169,Comp AI,www.trycomp.ai,trycompai/comp,https://github.com/trycompai/comp,manual,0.99,1385,250,2026-02-19T04:39:55Z,Significant external contributor community (multiple companies visible)
 7183,Conexus,www.conexus.com,,,no_repo,0.0,,,,No clear OSS repo found
-7499,ConfigCat,configcat.com,configcat/common,,manual,0.99,,,,Repo lookup failed
+7499,ConfigCat,configcat.com,configcat/js-sdk,https://github.com/configcat/js-sdk,manual,0.99,34,9,2026-02-03T15:42:58Z,Mixed maintainership with external contributors
 7596,Lunar.dev,www.lunar.dev,TheLunarCompany/lunar,https://github.com/TheLunarCompany/lunar,search_affinity,0.84,398,24,2026-02-18T14:22:43Z,"Mostly core-team maintained, some external contributions"
 7604,Zuplo,https://zuplo.com/,zuplo/zuplo,https://github.com/zuplo/zuplo,domain_org_match,0.95,38,6,2026-02-17T13:28:50Z,Mixed maintainership with external contributors (multiple companies visible)
 4439,Overmind,overmind.tech,,,no_repo,0.0,,,,No clear OSS repo found
@@ -118,7 +118,7 @@ id,project,input_url,github_repo,repo_url,match_source,match_confidence,stars,fo
 6070,Kill Bill,www.killbill.io,killbill/killbill,https://github.com/killbill/killbill,manual,0.99,5339,897,2025-11-25T07:51:04Z,Mixed maintainership with external contributors (multiple companies visible)
 6841,Opsima,www.opsima.ai,,,unresolved,0.0,,,,No clear OSS repo found
 4061,Excalidraw,excalidraw.com,excalidraw/excalidraw,https://github.com/excalidraw/excalidraw,manual,0.99,117042,12574,2026-02-17T13:10:05Z,Significant external contributor community (multiple companies visible)
-4470,plakar,plakar.io,plakar/kapsule,,manual,0.99,,,,Repo lookup failed
+4470,plakar,plakar.io,,,unresolved,0.0,,,,No clear OSS repo found
 5655,Metify,www.metify.io,,,no_repo,0.0,,,,No clear OSS repo found
 6068,Trapezoid,www.trapezoid.com,,,no_repo,0.0,,,,No clear OSS repo found
 6088,Authentik Security,goauthentik.io,goauthentik/authentik,https://github.com/goauthentik/authentik,manual,0.99,20191,1479,2026-02-18T21:40:40Z,Mixed maintainership with external contributors

@@ -14,7 +14,7 @@
 | NextCloud | nextcloud/server | 34125 | 4725 | 2026-02-19T08:17:45Z | Significant external contributors; multi-company signals |
 | Karate Labs | karatelabs/karate | 8787 | 2013 | 2025-12-05T11:12:19Z | Mostly parent-company/core team; multi-company signals |
 | Meticulous | meticulous/state-decoded-ui-2012 | 6 | 0 | 2013-09-09T22:08:21Z | Mostly parent-company/core team |
-| Weld | weld/weld-testing | 112 | 33 | 2026-02-01T04:22:29Z | Mixed (core + external); notable: IBM, Red Hat, Inc.) |
+| Weld | weld/weld-testing | 112 | 33 | 2026-02-01T04:22:29Z | Mixed (core + external); notable: IBM, Red Hat, Inc. |
 | ThingsBoard | thingsboard/thingsboard | 21145 | 6138 | 2026-02-17T13:25:28Z | Significant external contributors |
 | Civo | civo/civo | 0 | 1 | 2020-09-28T10:48:34Z | Mostly parent-company/core team |
 | Red5 | Red5/red5-server | 3425 | 1012 | 2026-02-18T17:25:51Z | Mostly parent-company/core team |
@@ -26,7 +26,7 @@
 | Middleware | middlewarehq/middleware | 1544 | 159 | 2026-01-14T12:41:34Z | Significant external contributors; multi-company signals |
 | Daytona | daytonaio/daytona | 58392 | 5038 | 2026-02-18T11:21:17Z | Mixed (core + external) |
 | Directus | directus/directus | 34247 | 4569 | 2026-02-18T19:16:05Z | Mostly parent-company/core team |
-| Gatling | gatling/gatling | 6864 | 1213 | 2026-02-17T13:02:27Z | Mostly parent-company/core team; notable: DataDog) |
+| Gatling | gatling/gatling | 6864 | 1213 | 2026-02-17T13:02:27Z | Mostly parent-company/core team; notable: DataDog |
 | OpenReplay | openreplay/openreplay | 11741 | 686 | 2026-02-19T08:57:02Z | Significant external contributors; multi-company signals |
 | Reflex (Pynecone) | reflex-dev/reflex | 28128 | 1690 | 2026-02-13T21:15:13Z | Significant external contributors; multi-company signals |
 | Facets.Cloud | Facets-cloud/facets.cloud | 3 | 0 | 2024-04-30T13:02:45Z | Mostly parent-company/core team |
@@ -53,19 +53,19 @@
 | Cavelo | Cavelo44000/Cavelo | 0 | 0 | 2025-06-20T17:56:01Z | Mostly parent-company/core team |
 | GoodAccess | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Flagsmith | Flagsmith/flagsmith | 6219 | 467 | 2026-02-19T08:22:15Z | Significant external contributors |
-| WunderGraph | wundergraph/wundergraph |  |  |  | Repo lookup failed |
+| WunderGraph | wundergraph/cosmo | 1166 | 210 | 2026-02-19T00:35:35Z | Mixed (core + external); multi-company signals |
 | Lleverage | lleverage-ai/lleverage-active-monitoring | 0 | 0 | 2025-11-04T15:42:33Z | Mostly parent-company/core team |
 | PlayerZero | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | CodeAnt AI | CodeAnt-AI/CodeAnt-AI | 6 | 3 | 2024-01-19T09:54:20Z | Mostly parent-company/core team |
 | Baserock.ai | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Windmill | windmill-labs/windmill | 15838 | 882 | 2026-02-19T09:37:11Z | Mostly parent-company/core team |
 | StepSecurity | step-security/harden-runner | 964 | 83 | 2026-02-07T01:26:07Z | Mostly parent-company/core team |
-| simplyblock | simplyblock-io/simplyblock |  |  |  | Repo lookup failed |
+| simplyblock | simplyblock/vela | 116 | 4 | 2026-02-18T11:33:34Z | Significant external contributors |
 | Cloud Storage Security (cloudstoragesec) | N/A | N/A | N/A | N/A | No clear OSS repo identified |
-| Encore (Leap) | encoredev/encore | 11434 | 558 | 2026-02-18T09:23:09Z | Mixed (core + external); notable: Spotify) |
+| Encore (Leap) | encoredev/encore | 11434 | 558 | 2026-02-18T09:23:09Z | Mixed (core + external); notable: Spotify |
 | APIContext | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Gruntwork | gruntwork-io/terragrunt | 9310 | 1139 | 2026-02-18T19:38:53Z | Significant external contributors |
-| Golioth | golioth/golioth |  |  |  | Repo lookup failed |
+| Golioth | golioth/golioth-firmware-sdk | 107 | 22 | 2026-01-15T14:42:54Z | Significant external contributors |
 | Ambar | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | LangDB | langdb/jupyterlite-langdb | 1 | 0 | 2024-09-19T07:07:24Z | Mostly parent-company/core team |
 | Syntasso (Kratix) | syntasso/kratix | 724 | 49 | 2026-02-18T17:09:54Z | Significant external contributors |
@@ -77,10 +77,10 @@
 | Amplication | amplication/amplication | 16002 | 1554 | 2025-10-11T08:16:54Z | Significant external contributors; multi-company signals |
 | Hiop | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Superstream | gpahal/superstream | 3 | 0 | 2024-07-18T17:59:58Z | Mostly parent-company/core team |
-| Apidog (Anakin AI) | apidog/apidog |  |  |  | Repo lookup failed |
+| Apidog (Anakin AI) | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | FalkorDB | FalkorDB/FalkorDB | 3431 | 267 | 2026-02-18T08:15:31Z | Significant external contributors |
-| Polar Signals | polarsignals/parca |  |  |  | Repo lookup failed |
-| Antimetal | antimetal/terraform-aws-antimetal | 3 | 0 | 2023-08-08T16:48:48Z | Mostly parent-company/core team; notable: Antimetal) |
+| Polar Signals | parca-dev/parca | 4782 | 244 | 2026-02-18T17:35:25Z | Mixed (core + external); notable: DataDog |
+| Antimetal | antimetal/terraform-aws-antimetal | 3 | 0 | 2023-08-08T16:48:48Z | Mostly parent-company/core team; notable: Antimetal |
 | Guepard | Guepard-Corp/Guepard | 5 | 0 | 2025-03-22T19:23:02Z | Mostly parent-company/core team |
 | ControlMonkey | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Radium | N/A | N/A | N/A | N/A | No clear OSS repo identified |
@@ -90,7 +90,7 @@
 | digger.dev | diggerhq/digger | 4855 | 573 | 2026-02-07T16:15:17Z | Significant external contributors |
 | Comp AI | trycompai/comp | 1385 | 250 | 2026-02-19T04:39:55Z | Significant external contributors; multi-company signals |
 | Conexus | N/A | N/A | N/A | N/A | No clear OSS repo identified |
-| ConfigCat | configcat/common |  |  |  | Repo lookup failed |
+| ConfigCat | configcat/js-sdk | 34 | 9 | 2026-02-03T15:42:58Z | Mixed (core + external) |
 | Lunar.dev | TheLunarCompany/lunar | 398 | 24 | 2026-02-18T14:22:43Z | Mostly parent-company/core team |
 | Zuplo | zuplo/zuplo | 38 | 6 | 2026-02-17T13:28:50Z | Mixed (core + external); multi-company signals |
 | Overmind | N/A | N/A | N/A | N/A | No clear OSS repo identified |
@@ -119,7 +119,7 @@
 | Kill Bill | killbill/killbill | 5339 | 897 | 2025-11-25T07:51:04Z | Mixed (core + external); multi-company signals |
 | Opsima | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Excalidraw | excalidraw/excalidraw | 117042 | 12574 | 2026-02-17T13:10:05Z | Significant external contributors; multi-company signals |
-| plakar | plakar/kapsule |  |  |  | Repo lookup failed |
+| plakar | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Metify | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Trapezoid | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Authentik Security | goauthentik/authentik | 20191 | 1479 | 2026-02-18T21:40:40Z | Mixed (core + external) |
@@ -139,7 +139,7 @@
 | GO Feature Flag // Kuber // | thomaspoignant/go-feature-flag | 1939 | 200 | 2026-02-17T01:08:23Z | Mostly parent-company/core team |
 | KushoAI | kusho-co/kusho-test-runner | 0 | 0 | 2024-11-19T06:27:38Z | Mostly parent-company/core team |
 | Sylabs (pivot to QLAD) | sylabs/singularity | 933 | 112 | 2026-02-13T12:50:39Z | Significant external contributors; multi-company signals |
-| Kedify (KEDA) | kedacore/keda | 9918 | 1319 | 2026-02-18T13:02:49Z | Significant external contributors; notable: Microsoft) |
+| Kedify (KEDA) | kedacore/keda | 9918 | 1319 | 2026-02-18T13:02:49Z | Significant external contributors; notable: Microsoft |
 | AxisNow | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | LatenceTech | N/A | N/A | N/A | N/A | No clear OSS repo identified |
 | Kortix | N/A | N/A | N/A | N/A | No clear OSS repo identified |
